@@ -1,0 +1,501 @@
+EventID,DeviceID,EventTimestamp,DeviceType,EventType,Severity,Status,Region,City,Province,ErrorCode,Description
+EVT-000034,AP-OTT-026,2026-01-01 10:02:41,Access Point,ConnectivityLoss,High,Closed,Eastern,Ottawa,Ontario,NET-503,Device connectivity interrupted
+EVT-000151,SWT-HAL-012,2026-01-01 12:28:11,Network Switch,Maintenance,Informational,Open,Atlantic,Halifax,Nova Scotia,MNT-100,Scheduled network maintenance activity
+EVT-000009,WLS-OTT-019,2026-01-01 15:07:27,Wireless Infrastructure,PacketLoss,Warning,Closed,Eastern,Ottawa,Ontario,PKT-429,Elevated packet loss detected
+EVT-000099,GTW-CAL-050,2026-01-02 03:28:39,Network Gateway,ConnectivityLoss,Critical,Closed,Western,Calgary,Alberta,NET-503,Device connectivity interrupted
+EVT-000257,SWT-CAL-045,2026-01-02 04:27:18,Network Switch,ServiceInterruption,Critical,Resolved,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000205,WLS-OTT-019,2026-01-02 13:44:21,Wireless Infrastructure,ConnectivityLoss,Critical,Resolved,Eastern,Ottawa,Ontario,NET-503,Device connectivity interrupted
+EVT-000499,SWT-QUE-009,2026-01-02 18:36:08,Network Switch,ConfigurationChange,Informational,Investigating,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000118,SRV-FRE-028,2026-01-03 10:57:47,Service Infrastructure,HighLatency,Warning,Resolved,Atlantic,Fredericton,New Brunswick,LAT-408,Network latency exceeded operational threshold
+EVT-000160,SWT-QUE-003,2026-01-06 00:32:20,Network Switch,PacketLoss,High,Resolved,Eastern,Quebec City,Quebec,PKT-429,Elevated packet loss detected
+EVT-000353,RTR-CAL-021,2026-01-06 00:45:53,Router,ServiceInterruption,High,Open,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000361,AP-QUE-013,2026-01-06 02:29:32,Access Point,HardwareFailure,High,Closed,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000173,WLS-OTT-019,2026-01-06 14:32:28,Wireless Infrastructure,DeviceRecovery,Informational,Resolved,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000406,AP-VAN-034,2026-01-07 03:07:45,Access Point,PacketLoss,Warning,Investigating,Western,Vancouver,British Columbia,PKT-429,Elevated packet loss detected
+EVT-000152,GTW-VAN-027,2026-01-07 08:06:45,Network Gateway,DeviceRecovery,Informational,Closed,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000286,SRV-HAL-005,2026-01-08 07:15:44,Service Infrastructure,ServiceInterruption,Critical,Closed,Atlantic,Halifax,Nova Scotia,SVC-503,Network service interruption detected
+EVT-000318,AP-TOR-007,2026-01-08 10:30:20,Access Point,HighLatency,Warning,Investigating,Central,Toronto,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000291,AP-TOR-007,2026-01-08 14:24:55,Access Point,HighLatency,Warning,Investigating,Central,Toronto,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000058,SWT-CAL-036,2026-01-09 02:56:11,Network Switch,HardwareFailure,Critical,Investigating,Western,Calgary,Alberta,HW-500,Hardware component failure detected
+EVT-000054,SWT-OTT-004,2026-01-09 13:27:33,Network Switch,PerformanceDegradation,High,Resolved,Eastern,Ottawa,Ontario,PERF-201,Network performance degradation detected
+EVT-000331,SWT-EDM-016,2026-01-09 14:37:09,Network Switch,PerformanceDegradation,High,Investigating,Western,Edmonton,Alberta,PERF-201,Network performance degradation detected
+EVT-000397,GTW-FRE-010,2026-01-09 19:07:44,Network Gateway,ConfigurationChange,Warning,Open,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000265,RTR-OTT-008,2026-01-09 19:39:36,Router,ServiceInterruption,Critical,Resolved,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000374,WLS-QUE-037,2026-01-09 19:52:02,Wireless Infrastructure,ConnectivityLoss,High,Open,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000139,RTR-EDM-020,2026-01-09 20:07:06,Router,ConnectivityLoss,High,Resolved,Western,Edmonton,Alberta,NET-503,Device connectivity interrupted
+EVT-000322,WLS-OTT-019,2026-01-10 06:31:42,Wireless Infrastructure,ConfigurationChange,Warning,Open,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000088,SRV-FRE-028,2026-01-10 18:02:04,Service Infrastructure,ConfigurationChange,Informational,Closed,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000228,SWT-OTT-030,2026-01-10 19:42:46,Network Switch,PerformanceDegradation,Warning,Open,Eastern,Ottawa,Ontario,PERF-201,Network performance degradation detected
+EVT-000500,AP-FRE-014,2026-01-12 17:43:04,Access Point,Maintenance,Informational,Resolved,Atlantic,Fredericton,New Brunswick,MNT-100,Scheduled network maintenance activity
+EVT-000226,SRV-WIN-024,2026-01-12 18:11:01,Service Infrastructure,PerformanceDegradation,High,Resolved,Central,Winnipeg,Manitoba,PERF-201,Network performance degradation detected
+EVT-000096,WLS-TOR-015,2026-01-13 11:19:41,Wireless Infrastructure,PacketLoss,Warning,Investigating,Central,Toronto,Ontario,PKT-429,Elevated packet loss detected
+EVT-000349,SRV-OTT-039,2026-01-14 01:19:48,Service Infrastructure,DeviceRecovery,Informational,Resolved,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000229,WLS-FRE-022,2026-01-14 07:44:47,Wireless Infrastructure,ConfigurationChange,Informational,Investigating,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000153,WLS-TOR-015,2026-01-14 19:43:18,Wireless Infrastructure,ServiceInterruption,Critical,Closed,Central,Toronto,Ontario,SVC-503,Network service interruption detected
+EVT-000240,SRV-HAL-044,2026-01-15 06:29:29,Service Infrastructure,PerformanceDegradation,High,Closed,Atlantic,Halifax,Nova Scotia,PERF-201,Network performance degradation detected
+EVT-000213,WLS-OTT-019,2026-01-15 14:55:13,Wireless Infrastructure,HighLatency,Warning,Closed,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000115,RTR-EDM-020,2026-01-15 18:10:09,Router,PacketLoss,High,Investigating,Western,Edmonton,Alberta,PKT-429,Elevated packet loss detected
+EVT-000167,RTR-QUE-049,2026-01-18 02:23:18,Router,Maintenance,Informational,Resolved,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000209,WLS-FRE-029,2026-01-18 12:03:07,Wireless Infrastructure,ConnectivityLoss,Critical,Investigating,Atlantic,Fredericton,New Brunswick,NET-503,Device connectivity interrupted
+EVT-000214,GTW-FRE-010,2026-01-18 12:50:30,Network Gateway,ConfigurationChange,Warning,Resolved,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000163,SWT-QUE-018,2026-01-18 17:13:13,Network Switch,HardwareFailure,Critical,Closed,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000130,RTR-QUE-031,2026-01-19 01:39:36,Router,DeviceRecovery,Informational,Resolved,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000248,RTR-QUE-031,2026-01-19 02:29:01,Router,PerformanceDegradation,Warning,Open,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000395,SWT-CAL-036,2026-01-19 18:34:06,Network Switch,ServiceInterruption,High,Investigating,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000243,AP-VAN-034,2026-01-20 06:12:18,Access Point,ServiceInterruption,Critical,Closed,Western,Vancouver,British Columbia,SVC-503,Network service interruption detected
+EVT-000423,AP-VAN-034,2026-01-20 10:57:22,Access Point,ConfigurationChange,Informational,Open,Western,Vancouver,British Columbia,CFG-101,Network device configuration was changed
+EVT-000203,RTR-EDM-020,2026-01-21 17:02:24,Router,ConfigurationChange,Warning,Closed,Western,Edmonton,Alberta,CFG-101,Network device configuration was changed
+EVT-000216,SRV-WIN-024,2026-01-22 00:55:45,Service Infrastructure,ServiceInterruption,Critical,Resolved,Central,Winnipeg,Manitoba,SVC-503,Network service interruption detected
+EVT-000070,WLS-VAN-017,2026-01-22 01:11:32,Wireless Infrastructure,HardwareFailure,Critical,Open,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000421,AP-CAL-035,2026-01-22 05:01:57,Access Point,ServiceInterruption,Critical,Investigating,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000232,GTW-FRE-010,2026-01-22 08:17:38,Network Gateway,HardwareFailure,Critical,Investigating,Atlantic,Fredericton,New Brunswick,HW-500,Hardware component failure detected
+EVT-000323,SWT-EDM-016,2026-01-22 12:38:06,Network Switch,PacketLoss,High,Open,Western,Edmonton,Alberta,PKT-429,Elevated packet loss detected
+EVT-000008,RTR-CAL-047,2026-01-22 15:52:14,Router,PerformanceDegradation,High,Resolved,Western,Calgary,Alberta,PERF-201,Network performance degradation detected
+EVT-000056,AP-VAN-048,2026-01-22 17:22:12,Access Point,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000143,SWT-HAL-012,2026-01-23 03:41:04,Network Switch,ConnectivityLoss,Critical,Closed,Atlantic,Halifax,Nova Scotia,NET-503,Device connectivity interrupted
+EVT-000050,AP-VAN-043,2026-01-23 09:56:11,Access Point,PerformanceDegradation,Warning,Resolved,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000220,SWT-QUE-003,2026-01-23 13:09:38,Network Switch,ConnectivityLoss,Critical,Closed,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000146,WLS-QUE-037,2026-01-24 00:01:27,Wireless Infrastructure,ServiceInterruption,High,Investigating,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000360,RTR-HAL-011,2026-01-24 13:35:24,Router,HardwareFailure,Critical,Investigating,Atlantic,Halifax,Nova Scotia,HW-500,Hardware component failure detected
+EVT-000416,RTR-QUE-031,2026-01-24 15:58:28,Router,HighLatency,High,Resolved,Eastern,Quebec City,Quebec,LAT-408,Network latency exceeded operational threshold
+EVT-000250,SWT-OTT-004,2026-01-24 17:38:20,Network Switch,Maintenance,Informational,Closed,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000338,GTW-CAL-050,2026-01-25 04:05:44,Network Gateway,ConnectivityLoss,Critical,Resolved,Western,Calgary,Alberta,NET-503,Device connectivity interrupted
+EVT-000241,RTR-FRE-006,2026-01-25 12:05:43,Router,HighLatency,Warning,Open,Atlantic,Fredericton,New Brunswick,LAT-408,Network latency exceeded operational threshold
+EVT-000111,AP-QUE-013,2026-01-25 12:13:56,Access Point,ConnectivityLoss,High,Investigating,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000140,SWT-OTT-004,2026-01-25 12:30:18,Network Switch,Maintenance,Informational,Closed,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000366,SRV-HAL-005,2026-01-25 22:04:57,Service Infrastructure,DeviceRecovery,Informational,Closed,Atlantic,Halifax,Nova Scotia,REC-200,Network device recovered and returned to service
+EVT-000089,SWT-CAL-036,2026-01-26 21:24:18,Network Switch,ConfigurationChange,Informational,Closed,Western,Calgary,Alberta,CFG-101,Network device configuration was changed
+EVT-000444,WLS-OTT-019,2026-01-26 22:28:32,Wireless Infrastructure,HighLatency,Warning,Investigating,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000105,WLS-QUE-037,2026-01-27 08:24:19,Wireless Infrastructure,ConnectivityLoss,High,Closed,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000219,SWT-OTT-030,2026-01-28 03:24:29,Network Switch,ServiceInterruption,Critical,Open,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000469,WLS-FRE-029,2026-01-28 05:04:44,Wireless Infrastructure,ConfigurationChange,Informational,Open,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000383,RTR-OTT-008,2026-01-28 08:32:14,Router,ServiceInterruption,Critical,Investigating,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000258,SWT-HAL-012,2026-01-28 13:11:01,Network Switch,HardwareFailure,Critical,Open,Atlantic,Halifax,Nova Scotia,HW-500,Hardware component failure detected
+EVT-000001,AP-FRE-014,2026-01-28 17:49:47,Access Point,DeviceRecovery,Informational,Closed,Atlantic,Fredericton,New Brunswick,REC-200,Network device recovered and returned to service
+EVT-000280,SWT-WIN-042,2026-01-29 10:28:46,Network Switch,HardwareFailure,High,Open,Central,Winnipeg,Manitoba,HW-500,Hardware component failure detected
+EVT-000155,RTR-OTT-008,2026-01-29 22:20:27,Router,Maintenance,Informational,Closed,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000475,AP-VAN-034,2026-01-29 23:24:16,Access Point,HighLatency,High,Closed,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000095,WLS-FRE-022,2026-01-30 06:55:18,Wireless Infrastructure,HighLatency,Warning,Investigating,Atlantic,Fredericton,New Brunswick,LAT-408,Network latency exceeded operational threshold
+EVT-000283,RTR-QUE-049,2026-01-30 07:30:44,Router,DeviceRecovery,Informational,Closed,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000303,WLS-OTT-032,2026-01-31 02:05:48,Wireless Infrastructure,ConfigurationChange,Informational,Investigating,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000464,WLS-TOR-015,2026-01-31 02:55:04,Wireless Infrastructure,ConfigurationChange,Warning,Resolved,Central,Toronto,Ontario,CFG-101,Network device configuration was changed
+EVT-000261,RTR-EDM-020,2026-01-31 05:03:17,Router,HighLatency,Warning,Open,Western,Edmonton,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000055,SRV-OTT-001,2026-02-01 09:01:35,Service Infrastructure,HighLatency,Warning,Resolved,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000310,GTW-CAL-050,2026-02-01 11:14:44,Network Gateway,ServiceInterruption,Critical,Closed,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000305,WLS-FRE-022,2026-02-01 12:07:36,Wireless Infrastructure,HardwareFailure,Critical,Investigating,Atlantic,Fredericton,New Brunswick,HW-500,Hardware component failure detected
+EVT-000156,SWT-QUE-018,2026-02-02 05:15:22,Network Switch,HardwareFailure,High,Open,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000032,AP-CAL-035,2026-02-02 07:03:57,Access Point,ConnectivityLoss,High,Investigating,Western,Calgary,Alberta,NET-503,Device connectivity interrupted
+EVT-000495,RTR-QUE-049,2026-02-02 16:01:32,Router,DeviceRecovery,Informational,Closed,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000197,GTW-FRE-010,2026-02-03 00:10:52,Network Gateway,ConfigurationChange,Warning,Investigating,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000405,GTW-CAL-050,2026-02-03 02:38:37,Network Gateway,ConfigurationChange,Informational,Closed,Western,Calgary,Alberta,CFG-101,Network device configuration was changed
+EVT-000357,RTR-OTT-008,2026-02-03 12:38:13,Router,HardwareFailure,High,Closed,Eastern,Ottawa,Ontario,HW-500,Hardware component failure detected
+EVT-000411,AP-VAN-043,2026-02-03 15:05:18,Access Point,DeviceRecovery,Informational,Closed,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000332,WLS-TOR-023,2026-02-03 23:58:28,Wireless Infrastructure,Maintenance,Informational,Closed,Central,Toronto,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000120,GTW-QUE-041,2026-02-04 04:51:27,Network Gateway,DeviceRecovery,Informational,Closed,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000062,RTR-HAL-011,2026-02-04 19:52:52,Router,HardwareFailure,Critical,Open,Atlantic,Halifax,Nova Scotia,HW-500,Hardware component failure detected
+EVT-000138,AP-QUE-013,2026-02-04 20:15:29,Access Point,ServiceInterruption,High,Resolved,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000326,SRV-OTT-001,2026-02-06 08:56:45,Service Infrastructure,HighLatency,Warning,Closed,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000170,AP-CAL-035,2026-02-06 10:11:52,Access Point,DeviceRecovery,Informational,Resolved,Western,Calgary,Alberta,REC-200,Network device recovered and returned to service
+EVT-000036,SWT-CAL-045,2026-02-06 20:59:17,Network Switch,Maintenance,Informational,Open,Western,Calgary,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000484,WLS-FRE-022,2026-02-06 21:34:28,Wireless Infrastructure,ServiceInterruption,High,Investigating,Atlantic,Fredericton,New Brunswick,SVC-503,Network service interruption detected
+EVT-000028,RTR-CAL-047,2026-02-07 04:52:28,Router,HighLatency,Warning,Investigating,Western,Calgary,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000077,RTR-CAL-021,2026-02-07 06:02:22,Router,PacketLoss,High,Investigating,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000433,SWT-QUE-009,2026-02-07 10:33:58,Network Switch,Maintenance,Informational,Resolved,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000370,AP-VAN-034,2026-02-08 02:49:59,Access Point,ServiceInterruption,High,Resolved,Western,Vancouver,British Columbia,SVC-503,Network service interruption detected
+EVT-000356,WLS-FRE-029,2026-02-08 20:53:55,Wireless Infrastructure,ConfigurationChange,Warning,Closed,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000210,WLS-OTT-019,2026-02-08 23:46:17,Wireless Infrastructure,HighLatency,High,Investigating,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000042,AP-VAN-043,2026-02-09 15:55:00,Access Point,Maintenance,Informational,Resolved,Western,Vancouver,British Columbia,MNT-100,Scheduled network maintenance activity
+EVT-000266,WLS-TOR-015,2026-02-09 16:40:50,Wireless Infrastructure,PacketLoss,Warning,Open,Central,Toronto,Ontario,PKT-429,Elevated packet loss detected
+EVT-000466,AP-VAN-043,2026-02-10 00:24:35,Access Point,PacketLoss,Warning,Investigating,Western,Vancouver,British Columbia,PKT-429,Elevated packet loss detected
+EVT-000483,RTR-QUE-049,2026-02-10 13:29:37,Router,Maintenance,Informational,Resolved,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000059,RTR-EDM-020,2026-02-10 19:01:39,Router,HighLatency,Warning,Resolved,Western,Edmonton,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000079,SWT-CAL-036,2026-02-10 19:31:20,Network Switch,ConnectivityLoss,Critical,Resolved,Western,Calgary,Alberta,NET-503,Device connectivity interrupted
+EVT-000230,RTR-QUE-049,2026-02-11 22:24:22,Router,Maintenance,Informational,Closed,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000003,SRV-VAN-038,2026-02-12 14:06:31,Service Infrastructure,PacketLoss,High,Resolved,Western,Vancouver,British Columbia,PKT-429,Elevated packet loss detected
+EVT-000101,AP-VAN-048,2026-02-12 14:34:44,Access Point,Maintenance,Informational,Resolved,Western,Vancouver,British Columbia,MNT-100,Scheduled network maintenance activity
+EVT-000277,RTR-FRE-006,2026-02-13 00:36:02,Router,PacketLoss,High,Resolved,Atlantic,Fredericton,New Brunswick,PKT-429,Elevated packet loss detected
+EVT-000253,SWT-OTT-033,2026-02-13 13:03:24,Network Switch,ConfigurationChange,Informational,Closed,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000019,AP-VAN-034,2026-02-13 15:09:55,Access Point,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000175,SRV-OTT-001,2026-02-13 15:10:51,Service Infrastructure,Maintenance,Informational,Open,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000021,WLS-TOR-015,2026-02-14 10:56:45,Wireless Infrastructure,ConnectivityLoss,High,Open,Central,Toronto,Ontario,NET-503,Device connectivity interrupted
+EVT-000134,SWT-OTT-030,2026-02-14 18:23:06,Network Switch,ServiceInterruption,Critical,Resolved,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000184,RTR-CAL-021,2026-02-15 08:28:47,Router,ConfigurationChange,Informational,Closed,Western,Calgary,Alberta,CFG-101,Network device configuration was changed
+EVT-000192,RTR-QUE-046,2026-02-15 14:06:31,Router,DeviceRecovery,Informational,Resolved,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000225,SRV-WIN-024,2026-02-15 20:21:52,Service Infrastructure,ConfigurationChange,Warning,Closed,Central,Winnipeg,Manitoba,CFG-101,Network device configuration was changed
+EVT-000013,RTR-VAN-002,2026-02-16 11:55:43,Router,PerformanceDegradation,High,Resolved,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000150,AP-FRE-014,2026-02-16 13:51:09,Access Point,ServiceInterruption,High,Investigating,Atlantic,Fredericton,New Brunswick,SVC-503,Network service interruption detected
+EVT-000388,RTR-VAN-002,2026-02-16 17:52:36,Router,PerformanceDegradation,High,Closed,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000476,RTR-EDM-020,2026-02-16 18:59:35,Router,PacketLoss,Warning,Closed,Western,Edmonton,Alberta,PKT-429,Elevated packet loss detected
+EVT-000128,SRV-OTT-001,2026-02-16 20:48:02,Service Infrastructure,Maintenance,Informational,Open,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000084,AP-QUE-013,2026-02-17 13:02:56,Access Point,HardwareFailure,High,Open,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000413,SRV-HAL-044,2026-02-17 20:51:44,Service Infrastructure,ServiceInterruption,Critical,Investigating,Atlantic,Halifax,Nova Scotia,SVC-503,Network service interruption detected
+EVT-000110,WLS-TOR-015,2026-02-18 00:25:25,Wireless Infrastructure,PerformanceDegradation,Warning,Open,Central,Toronto,Ontario,PERF-201,Network performance degradation detected
+EVT-000295,AP-TOR-007,2026-02-18 22:23:07,Access Point,Maintenance,Informational,Resolved,Central,Toronto,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000108,RTR-QUE-049,2026-02-18 23:40:13,Router,PacketLoss,High,Closed,Eastern,Quebec City,Quebec,PKT-429,Elevated packet loss detected
+EVT-000329,RTR-QUE-031,2026-02-19 06:05:45,Router,ConnectivityLoss,Critical,Resolved,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000479,AP-VAN-034,2026-02-19 12:21:57,Access Point,HardwareFailure,Critical,Investigating,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000320,GTW-MON-040,2026-02-19 16:41:31,Network Gateway,ConnectivityLoss,High,Open,Eastern,Montreal,Quebec,NET-503,Device connectivity interrupted
+EVT-000494,WLS-QUE-037,2026-02-19 23:13:46,Wireless Infrastructure,ConfigurationChange,Warning,Resolved,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000234,SWT-EDM-016,2026-02-21 12:42:08,Network Switch,HighLatency,Warning,Investigating,Western,Edmonton,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000063,AP-VAN-048,2026-02-21 19:24:17,Access Point,HighLatency,High,Investigating,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000481,SRV-WIN-024,2026-02-22 03:07:18,Service Infrastructure,PerformanceDegradation,Warning,Open,Central,Winnipeg,Manitoba,PERF-201,Network performance degradation detected
+EVT-000094,WLS-FRE-029,2026-02-22 18:17:03,Wireless Infrastructure,PerformanceDegradation,High,Investigating,Atlantic,Fredericton,New Brunswick,PERF-201,Network performance degradation detected
+EVT-000256,AP-VAN-043,2026-02-23 01:31:56,Access Point,ServiceInterruption,High,Investigating,Western,Vancouver,British Columbia,SVC-503,Network service interruption detected
+EVT-000346,WLS-FRE-029,2026-02-23 07:31:14,Wireless Infrastructure,ConnectivityLoss,Critical,Closed,Atlantic,Fredericton,New Brunswick,NET-503,Device connectivity interrupted
+EVT-000093,SWT-EDM-016,2026-02-23 07:43:00,Network Switch,ServiceInterruption,Critical,Investigating,Western,Edmonton,Alberta,SVC-503,Network service interruption detected
+EVT-000231,WLS-TOR-015,2026-02-23 20:11:39,Wireless Infrastructure,HighLatency,Warning,Open,Central,Toronto,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000389,AP-FRE-014,2026-02-24 15:12:56,Access Point,HighLatency,Warning,Open,Atlantic,Fredericton,New Brunswick,LAT-408,Network latency exceeded operational threshold
+EVT-000051,AP-TOR-007,2026-02-24 17:04:45,Access Point,Maintenance,Informational,Resolved,Central,Toronto,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000312,RTR-QUE-031,2026-02-25 08:29:23,Router,HighLatency,Warning,Open,Eastern,Quebec City,Quebec,LAT-408,Network latency exceeded operational threshold
+EVT-000251,GTW-VAN-027,2026-02-25 20:27:00,Network Gateway,HighLatency,High,Open,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000418,WLS-TOR-023,2026-02-25 20:27:16,Wireless Infrastructure,HardwareFailure,Critical,Open,Central,Toronto,Ontario,HW-500,Hardware component failure detected
+EVT-000267,RTR-EDM-020,2026-02-26 04:55:17,Router,ConfigurationChange,Informational,Resolved,Western,Edmonton,Alberta,CFG-101,Network device configuration was changed
+EVT-000334,SWT-QUE-009,2026-02-26 23:32:29,Network Switch,PerformanceDegradation,High,Open,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000492,GTW-FRE-010,2026-02-27 07:41:44,Network Gateway,ConnectivityLoss,Critical,Closed,Atlantic,Fredericton,New Brunswick,NET-503,Device connectivity interrupted
+EVT-000377,RTR-EDM-020,2026-02-27 18:08:32,Router,DeviceRecovery,Informational,Closed,Western,Edmonton,Alberta,REC-200,Network device recovered and returned to service
+EVT-000414,SWT-QUE-018,2026-02-27 18:59:03,Network Switch,Maintenance,Informational,Open,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000462,SWT-QUE-009,2026-02-27 22:28:20,Network Switch,ConfigurationChange,Informational,Open,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000472,GTW-FRE-010,2026-02-28 08:26:09,Network Gateway,Maintenance,Informational,Resolved,Atlantic,Fredericton,New Brunswick,MNT-100,Scheduled network maintenance activity
+EVT-000440,SWT-EDM-016,2026-02-28 15:10:10,Network Switch,DeviceRecovery,Informational,Closed,Western,Edmonton,Alberta,REC-200,Network device recovered and returned to service
+EVT-000368,SWT-OTT-033,2026-03-01 01:19:23,Network Switch,ConnectivityLoss,High,Investigating,Eastern,Ottawa,Ontario,NET-503,Device connectivity interrupted
+EVT-000131,WLS-OTT-019,2026-03-01 11:01:24,Wireless Infrastructure,ConfigurationChange,Warning,Investigating,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000442,SWT-EDM-016,2026-03-01 13:49:16,Network Switch,ConnectivityLoss,High,Closed,Western,Edmonton,Alberta,NET-503,Device connectivity interrupted
+EVT-000208,WLS-VAN-017,2026-03-01 23:43:53,Wireless Infrastructure,HardwareFailure,High,Open,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000363,SWT-CAL-036,2026-03-02 01:23:57,Network Switch,HardwareFailure,High,Open,Western,Calgary,Alberta,HW-500,Hardware component failure detected
+EVT-000308,AP-VAN-048,2026-03-02 02:13:29,Access Point,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000298,SWT-CAL-045,2026-03-02 02:45:22,Network Switch,PacketLoss,Warning,Open,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000246,GTW-VAN-027,2026-03-02 16:27:55,Network Gateway,PerformanceDegradation,High,Closed,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000335,AP-QUE-013,2026-03-03 06:46:59,Access Point,ConnectivityLoss,High,Open,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000415,GTW-CAL-050,2026-03-03 13:31:01,Network Gateway,ServiceInterruption,High,Closed,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000317,RTR-FRE-006,2026-03-03 21:10:44,Router,HighLatency,Warning,Open,Atlantic,Fredericton,New Brunswick,LAT-408,Network latency exceeded operational threshold
+EVT-000164,RTR-QUE-031,2026-03-04 08:14:23,Router,HighLatency,High,Resolved,Eastern,Quebec City,Quebec,LAT-408,Network latency exceeded operational threshold
+EVT-000289,SWT-CAL-036,2026-03-04 10:25:23,Network Switch,ConnectivityLoss,Critical,Investigating,Western,Calgary,Alberta,NET-503,Device connectivity interrupted
+EVT-000410,SWT-QUE-009,2026-03-05 02:50:26,Network Switch,Maintenance,Informational,Closed,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000343,WLS-OTT-019,2026-03-05 16:13:03,Wireless Infrastructure,HighLatency,Warning,Open,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000294,WLS-FRE-022,2026-03-06 00:28:13,Wireless Infrastructure,ConnectivityLoss,Critical,Open,Atlantic,Fredericton,New Brunswick,NET-503,Device connectivity interrupted
+EVT-000107,RTR-CAL-021,2026-03-07 12:51:59,Router,ConfigurationChange,Warning,Resolved,Western,Calgary,Alberta,CFG-101,Network device configuration was changed
+EVT-000379,GTW-VAN-027,2026-03-08 01:24:44,Network Gateway,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000142,WLS-OTT-019,2026-03-08 03:48:17,Wireless Infrastructure,DeviceRecovery,Informational,Closed,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000456,AP-FRE-014,2026-03-08 21:37:15,Access Point,PerformanceDegradation,Warning,Closed,Atlantic,Fredericton,New Brunswick,PERF-201,Network performance degradation detected
+EVT-000330,AP-VAN-048,2026-03-08 22:53:45,Access Point,ConnectivityLoss,Critical,Open,Western,Vancouver,British Columbia,NET-503,Device connectivity interrupted
+EVT-000369,RTR-HAL-011,2026-03-09 04:35:03,Router,HardwareFailure,Critical,Investigating,Atlantic,Halifax,Nova Scotia,HW-500,Hardware component failure detected
+EVT-000065,RTR-QUE-031,2026-03-09 21:31:34,Router,ConfigurationChange,Informational,Closed,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000109,RTR-FRE-006,2026-03-09 22:56:00,Router,DeviceRecovery,Informational,Resolved,Atlantic,Fredericton,New Brunswick,REC-200,Network device recovered and returned to service
+EVT-000345,RTR-QUE-046,2026-03-10 06:19:39,Router,PacketLoss,Warning,Closed,Eastern,Quebec City,Quebec,PKT-429,Elevated packet loss detected
+EVT-000412,SWT-OTT-030,2026-03-10 19:05:49,Network Switch,Maintenance,Informational,Closed,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000126,RTR-CAL-021,2026-03-10 21:36:15,Router,HardwareFailure,Critical,Investigating,Western,Calgary,Alberta,HW-500,Hardware component failure detected
+EVT-000337,WLS-VAN-017,2026-03-11 07:37:12,Wireless Infrastructure,ConnectivityLoss,High,Resolved,Western,Vancouver,British Columbia,NET-503,Device connectivity interrupted
+EVT-000233,AP-VAN-043,2026-03-11 13:31:48,Access Point,ConnectivityLoss,High,Open,Western,Vancouver,British Columbia,NET-503,Device connectivity interrupted
+EVT-000488,SWT-WIN-042,2026-03-11 20:03:55,Network Switch,HighLatency,High,Resolved,Central,Winnipeg,Manitoba,LAT-408,Network latency exceeded operational threshold
+EVT-000119,GTW-VAN-027,2026-03-12 07:55:06,Network Gateway,DeviceRecovery,Informational,Closed,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000301,SRV-FRE-028,2026-03-12 09:49:39,Service Infrastructure,Maintenance,Informational,Open,Atlantic,Fredericton,New Brunswick,MNT-100,Scheduled network maintenance activity
+EVT-000347,GTW-QUE-041,2026-03-12 13:09:09,Network Gateway,ConnectivityLoss,High,Closed,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000292,SWT-EDM-016,2026-03-12 15:53:14,Network Switch,DeviceRecovery,Informational,Resolved,Western,Edmonton,Alberta,REC-200,Network device recovered and returned to service
+EVT-000402,WLS-QUE-037,2026-03-13 12:40:18,Wireless Infrastructure,ServiceInterruption,Critical,Open,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000260,GTW-VAN-027,2026-03-13 20:34:20,Network Gateway,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000490,RTR-CAL-047,2026-03-13 23:36:36,Router,DeviceRecovery,Informational,Resolved,Western,Calgary,Alberta,REC-200,Network device recovered and returned to service
+EVT-000351,SWT-QUE-003,2026-03-14 05:42:28,Network Switch,HardwareFailure,Critical,Resolved,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000011,GTW-QUE-041,2026-03-14 14:33:53,Network Gateway,ServiceInterruption,High,Investigating,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000259,AP-VAN-048,2026-03-15 01:11:34,Access Point,ConnectivityLoss,High,Investigating,Western,Vancouver,British Columbia,NET-503,Device connectivity interrupted
+EVT-000106,SWT-OTT-030,2026-03-15 14:45:07,Network Switch,HardwareFailure,High,Resolved,Eastern,Ottawa,Ontario,HW-500,Hardware component failure detected
+EVT-000463,SWT-OTT-030,2026-03-15 15:33:23,Network Switch,Maintenance,Informational,Closed,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000493,GTW-FRE-010,2026-03-15 18:10:53,Network Gateway,ConfigurationChange,Warning,Investigating,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000006,SRV-HAL-044,2026-03-16 02:28:29,Service Infrastructure,PacketLoss,Warning,Closed,Atlantic,Halifax,Nova Scotia,PKT-429,Elevated packet loss detected
+EVT-000439,RTR-CAL-021,2026-03-16 11:35:10,Router,ConfigurationChange,Informational,Resolved,Western,Calgary,Alberta,CFG-101,Network device configuration was changed
+EVT-000316,SWT-OTT-004,2026-03-16 23:39:52,Network Switch,PacketLoss,High,Investigating,Eastern,Ottawa,Ontario,PKT-429,Elevated packet loss detected
+EVT-000102,SWT-QUE-018,2026-03-17 12:12:21,Network Switch,PacketLoss,High,Open,Eastern,Quebec City,Quebec,PKT-429,Elevated packet loss detected
+EVT-000043,AP-VAN-043,2026-03-18 20:29:44,Access Point,HighLatency,Warning,Resolved,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000270,RTR-QUE-046,2026-03-19 02:29:08,Router,ConfigurationChange,Warning,Open,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000352,WLS-FRE-029,2026-03-19 06:58:23,Wireless Infrastructure,PerformanceDegradation,Warning,Resolved,Atlantic,Fredericton,New Brunswick,PERF-201,Network performance degradation detected
+EVT-000245,WLS-TOR-015,2026-03-19 10:13:02,Wireless Infrastructure,PacketLoss,High,Closed,Central,Toronto,Ontario,PKT-429,Elevated packet loss detected
+EVT-000086,GTW-QUE-041,2026-03-19 14:31:02,Network Gateway,ConfigurationChange,Warning,Closed,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000392,SRV-WIN-024,2026-03-19 18:50:44,Service Infrastructure,PacketLoss,High,Open,Central,Winnipeg,Manitoba,PKT-429,Elevated packet loss detected
+EVT-000437,SRV-FRE-028,2026-03-19 20:01:05,Service Infrastructure,Maintenance,Informational,Open,Atlantic,Fredericton,New Brunswick,MNT-100,Scheduled network maintenance activity
+EVT-000468,SRV-HAL-044,2026-03-20 02:41:32,Service Infrastructure,ConnectivityLoss,High,Open,Atlantic,Halifax,Nova Scotia,NET-503,Device connectivity interrupted
+EVT-000027,RTR-CAL-047,2026-03-20 04:21:04,Router,ConnectivityLoss,High,Open,Western,Calgary,Alberta,NET-503,Device connectivity interrupted
+EVT-000040,SWT-HAL-012,2026-03-20 09:43:49,Network Switch,PerformanceDegradation,Warning,Investigating,Atlantic,Halifax,Nova Scotia,PERF-201,Network performance degradation detected
+EVT-000273,GTW-QUE-041,2026-03-20 15:35:14,Network Gateway,PacketLoss,High,Open,Eastern,Quebec City,Quebec,PKT-429,Elevated packet loss detected
+EVT-000078,GTW-VAN-027,2026-03-20 20:26:50,Network Gateway,PacketLoss,Warning,Resolved,Western,Vancouver,British Columbia,PKT-429,Elevated packet loss detected
+EVT-000425,GTW-CAL-050,2026-03-21 00:19:34,Network Gateway,HardwareFailure,High,Investigating,Western,Calgary,Alberta,HW-500,Hardware component failure detected
+EVT-000076,RTR-EDM-020,2026-03-21 07:14:56,Router,Maintenance,Informational,Closed,Western,Edmonton,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000306,SWT-HAL-012,2026-03-21 18:44:23,Network Switch,HardwareFailure,Critical,Open,Atlantic,Halifax,Nova Scotia,HW-500,Hardware component failure detected
+EVT-000165,AP-VAN-043,2026-03-21 22:24:18,Access Point,PerformanceDegradation,Warning,Resolved,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000498,SWT-QUE-003,2026-03-22 01:53:13,Network Switch,PerformanceDegradation,Warning,Open,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000263,AP-VAN-043,2026-03-22 10:14:10,Access Point,PacketLoss,High,Closed,Western,Vancouver,British Columbia,PKT-429,Elevated packet loss detected
+EVT-000315,WLS-TOR-015,2026-03-22 13:33:35,Wireless Infrastructure,DeviceRecovery,Informational,Resolved,Central,Toronto,Ontario,REC-200,Network device recovered and returned to service
+EVT-000097,GTW-VAN-027,2026-03-22 17:38:54,Network Gateway,PacketLoss,High,Closed,Western,Vancouver,British Columbia,PKT-429,Elevated packet loss detected
+EVT-000445,RTR-QUE-031,2026-03-22 17:58:51,Router,HardwareFailure,Critical,Resolved,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000041,RTR-OTT-008,2026-03-23 09:43:46,Router,ConfigurationChange,Informational,Open,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000029,AP-QUE-013,2026-03-23 22:06:39,Access Point,Maintenance,Informational,Open,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000035,GTW-OTT-025,2026-03-24 03:21:27,Network Gateway,ServiceInterruption,Critical,Resolved,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000154,SRV-HAL-044,2026-03-24 13:17:28,Service Infrastructure,ConfigurationChange,Warning,Investigating,Atlantic,Halifax,Nova Scotia,CFG-101,Network device configuration was changed
+EVT-000132,AP-VAN-043,2026-03-24 14:59:29,Access Point,HighLatency,High,Resolved,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000239,RTR-VAN-002,2026-03-24 18:34:44,Router,ConnectivityLoss,Critical,Closed,Western,Vancouver,British Columbia,NET-503,Device connectivity interrupted
+EVT-000325,WLS-QUE-037,2026-03-25 08:23:53,Wireless Infrastructure,ConfigurationChange,Informational,Resolved,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000264,SWT-QUE-018,2026-03-25 11:32:33,Network Switch,ConfigurationChange,Informational,Resolved,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000196,SWT-OTT-004,2026-03-25 15:08:45,Network Switch,ServiceInterruption,Critical,Resolved,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000074,SRV-FRE-028,2026-03-25 17:59:29,Service Infrastructure,ConnectivityLoss,High,Resolved,Atlantic,Fredericton,New Brunswick,NET-503,Device connectivity interrupted
+EVT-000367,GTW-CAL-050,2026-03-26 00:08:50,Network Gateway,Maintenance,Informational,Open,Western,Calgary,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000193,GTW-QUE-041,2026-03-26 06:27:13,Network Gateway,ServiceInterruption,High,Open,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000071,SRV-OTT-039,2026-03-26 17:44:34,Service Infrastructure,PacketLoss,High,Resolved,Eastern,Ottawa,Ontario,PKT-429,Elevated packet loss detected
+EVT-000048,SWT-EDM-016,2026-03-27 02:05:17,Network Switch,HighLatency,High,Investigating,Western,Edmonton,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000378,SWT-OTT-030,2026-03-27 08:42:36,Network Switch,PerformanceDegradation,Warning,Investigating,Eastern,Ottawa,Ontario,PERF-201,Network performance degradation detected
+EVT-000407,WLS-QUE-037,2026-03-27 15:23:19,Wireless Infrastructure,PerformanceDegradation,Warning,Open,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000201,SWT-OTT-030,2026-03-27 18:36:35,Network Switch,ServiceInterruption,High,Open,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000080,SRV-FRE-028,2026-03-27 20:36:50,Service Infrastructure,HighLatency,High,Closed,Atlantic,Fredericton,New Brunswick,LAT-408,Network latency exceeded operational threshold
+EVT-000262,RTR-HAL-011,2026-03-28 01:03:22,Router,ConnectivityLoss,High,Resolved,Atlantic,Halifax,Nova Scotia,NET-503,Device connectivity interrupted
+EVT-000091,RTR-CAL-047,2026-03-28 14:06:28,Router,Maintenance,Informational,Closed,Western,Calgary,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000459,SWT-QUE-009,2026-03-29 02:20:04,Network Switch,PacketLoss,High,Closed,Eastern,Quebec City,Quebec,PKT-429,Elevated packet loss detected
+EVT-000319,WLS-OTT-019,2026-03-29 02:38:03,Wireless Infrastructure,DeviceRecovery,Informational,Closed,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000147,SWT-CAL-036,2026-03-29 11:32:58,Network Switch,PacketLoss,Warning,Closed,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000290,SRV-OTT-039,2026-03-29 11:35:23,Service Infrastructure,DeviceRecovery,Informational,Resolved,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000244,SWT-CAL-045,2026-03-29 16:23:54,Network Switch,PerformanceDegradation,Warning,Closed,Western,Calgary,Alberta,PERF-201,Network performance degradation detected
+EVT-000221,AP-TOR-007,2026-03-30 02:07:59,Access Point,ConfigurationChange,Informational,Closed,Central,Toronto,Ontario,CFG-101,Network device configuration was changed
+EVT-000215,AP-OTT-026,2026-03-30 07:27:23,Access Point,ConnectivityLoss,Critical,Open,Eastern,Ottawa,Ontario,NET-503,Device connectivity interrupted
+EVT-000183,RTR-QUE-031,2026-03-30 10:03:34,Router,HighLatency,High,Closed,Eastern,Quebec City,Quebec,LAT-408,Network latency exceeded operational threshold
+EVT-000453,SWT-OTT-004,2026-03-30 16:50:06,Network Switch,DeviceRecovery,Informational,Closed,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000202,WLS-TOR-023,2026-03-30 17:00:33,Wireless Infrastructure,ServiceInterruption,Critical,Resolved,Central,Toronto,Ontario,SVC-503,Network service interruption detected
+EVT-000271,AP-VAN-048,2026-03-31 06:36:36,Access Point,ConnectivityLoss,Critical,Open,Western,Vancouver,British Columbia,NET-503,Device connectivity interrupted
+EVT-000309,RTR-QUE-031,2026-03-31 15:35:04,Router,ConfigurationChange,Warning,Closed,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000282,RTR-QUE-049,2026-04-01 02:10:40,Router,PerformanceDegradation,Warning,Closed,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000382,SWT-CAL-036,2026-04-01 13:55:11,Network Switch,PerformanceDegradation,High,Investigating,Western,Calgary,Alberta,PERF-201,Network performance degradation detected
+EVT-000026,SRV-FRE-028,2026-04-01 16:29:33,Service Infrastructure,HighLatency,High,Closed,Atlantic,Fredericton,New Brunswick,LAT-408,Network latency exceeded operational threshold
+EVT-000157,RTR-EDM-020,2026-04-02 00:17:27,Router,ServiceInterruption,Critical,Open,Western,Edmonton,Alberta,SVC-503,Network service interruption detected
+EVT-000189,GTW-FRE-010,2026-04-02 03:59:05,Network Gateway,PacketLoss,Warning,Open,Atlantic,Fredericton,New Brunswick,PKT-429,Elevated packet loss detected
+EVT-000457,SWT-CAL-045,2026-04-02 16:00:40,Network Switch,PerformanceDegradation,Warning,Open,Western,Calgary,Alberta,PERF-201,Network performance degradation detected
+EVT-000336,RTR-EDM-020,2026-04-02 22:12:10,Router,Maintenance,Informational,Closed,Western,Edmonton,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000438,AP-VAN-043,2026-04-03 17:05:50,Access Point,PerformanceDegradation,Warning,Investigating,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000012,RTR-QUE-049,2026-04-05 21:04:03,Router,HardwareFailure,High,Resolved,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000125,SWT-OTT-030,2026-04-06 23:38:06,Network Switch,PacketLoss,High,Open,Eastern,Ottawa,Ontario,PKT-429,Elevated packet loss detected
+EVT-000186,RTR-QUE-031,2026-04-07 04:23:55,Router,PacketLoss,High,Investigating,Eastern,Quebec City,Quebec,PKT-429,Elevated packet loss detected
+EVT-000387,SWT-OTT-033,2026-04-07 13:54:48,Network Switch,DeviceRecovery,Informational,Closed,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000198,SWT-HAL-012,2026-04-07 15:17:50,Network Switch,PerformanceDegradation,High,Investigating,Atlantic,Halifax,Nova Scotia,PERF-201,Network performance degradation detected
+EVT-000386,RTR-CAL-021,2026-04-07 18:05:08,Router,HighLatency,Warning,Investigating,Western,Calgary,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000176,RTR-OTT-008,2026-04-07 18:35:53,Router,DeviceRecovery,Informational,Resolved,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000158,SWT-CAL-045,2026-04-08 04:22:09,Network Switch,ServiceInterruption,Critical,Resolved,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000211,SWT-QUE-009,2026-04-08 10:31:59,Network Switch,Maintenance,Informational,Closed,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000038,RTR-CAL-021,2026-04-08 15:27:09,Router,ConnectivityLoss,High,Closed,Western,Calgary,Alberta,NET-503,Device connectivity interrupted
+EVT-000046,WLS-QUE-037,2026-04-09 05:35:36,Wireless Infrastructure,PerformanceDegradation,Warning,Investigating,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000285,RTR-EDM-020,2026-04-09 12:21:40,Router,ServiceInterruption,High,Resolved,Western,Edmonton,Alberta,SVC-503,Network service interruption detected
+EVT-000236,SRV-HAL-005,2026-04-10 15:51:44,Service Infrastructure,DeviceRecovery,Informational,Closed,Atlantic,Halifax,Nova Scotia,REC-200,Network device recovered and returned to service
+EVT-000022,SRV-HAL-005,2026-04-10 20:08:28,Service Infrastructure,ConnectivityLoss,Critical,Open,Atlantic,Halifax,Nova Scotia,NET-503,Device connectivity interrupted
+EVT-000381,WLS-TOR-023,2026-04-10 23:58:52,Wireless Infrastructure,PacketLoss,Warning,Resolved,Central,Toronto,Ontario,PKT-429,Elevated packet loss detected
+EVT-000324,WLS-OTT-032,2026-04-11 01:49:29,Wireless Infrastructure,Maintenance,Informational,Closed,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000398,SWT-QUE-003,2026-04-11 20:15:57,Network Switch,HardwareFailure,Critical,Closed,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000497,AP-CAL-035,2026-04-12 17:45:28,Access Point,DeviceRecovery,Informational,Resolved,Western,Calgary,Alberta,REC-200,Network device recovered and returned to service
+EVT-000276,AP-TOR-007,2026-04-12 17:50:32,Access Point,ConfigurationChange,Warning,Closed,Central,Toronto,Ontario,CFG-101,Network device configuration was changed
+EVT-000447,AP-VAN-043,2026-04-13 01:02:18,Access Point,ConfigurationChange,Informational,Open,Western,Vancouver,British Columbia,CFG-101,Network device configuration was changed
+EVT-000327,AP-VAN-043,2026-04-13 03:36:52,Access Point,PerformanceDegradation,High,Open,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000016,RTR-QUE-031,2026-04-13 11:08:17,Router,Maintenance,Informational,Resolved,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000461,WLS-TOR-023,2026-04-13 16:35:05,Wireless Infrastructure,PerformanceDegradation,Warning,Closed,Central,Toronto,Ontario,PERF-201,Network performance degradation detected
+EVT-000278,WLS-FRE-022,2026-04-14 00:47:51,Wireless Infrastructure,HardwareFailure,High,Open,Atlantic,Fredericton,New Brunswick,HW-500,Hardware component failure detected
+EVT-000269,SRV-FRE-028,2026-04-14 10:00:49,Service Infrastructure,HardwareFailure,High,Closed,Atlantic,Fredericton,New Brunswick,HW-500,Hardware component failure detected
+EVT-000117,SRV-HAL-044,2026-04-14 10:46:22,Service Infrastructure,PerformanceDegradation,Warning,Resolved,Atlantic,Halifax,Nova Scotia,PERF-201,Network performance degradation detected
+EVT-000487,RTR-CAL-021,2026-04-14 14:59:23,Router,ServiceInterruption,Critical,Closed,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000100,WLS-TOR-023,2026-04-15 12:17:22,Wireless Infrastructure,ServiceInterruption,Critical,Closed,Central,Toronto,Ontario,SVC-503,Network service interruption detected
+EVT-000182,RTR-EDM-020,2026-04-15 13:58:02,Router,DeviceRecovery,Informational,Closed,Western,Edmonton,Alberta,REC-200,Network device recovered and returned to service
+EVT-000023,SWT-EDM-016,2026-04-15 17:00:44,Network Switch,ServiceInterruption,Critical,Investigating,Western,Edmonton,Alberta,SVC-503,Network service interruption detected
+EVT-000342,SRV-FRE-028,2026-04-16 22:05:41,Service Infrastructure,PerformanceDegradation,High,Investigating,Atlantic,Fredericton,New Brunswick,PERF-201,Network performance degradation detected
+EVT-000174,GTW-QUE-041,2026-04-17 23:05:45,Network Gateway,ConfigurationChange,Informational,Resolved,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000178,RTR-QUE-031,2026-04-18 01:04:53,Router,DeviceRecovery,Informational,Closed,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000486,SRV-OTT-039,2026-04-18 04:52:33,Service Infrastructure,ConfigurationChange,Warning,Investigating,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000393,SWT-OTT-004,2026-04-18 10:12:20,Network Switch,Maintenance,Informational,Resolved,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000127,WLS-VAN-017,2026-04-18 22:10:26,Wireless Infrastructure,HighLatency,High,Resolved,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000473,SWT-QUE-018,2026-04-18 22:27:06,Network Switch,ConnectivityLoss,High,Closed,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000249,SRV-FRE-028,2026-04-19 00:52:32,Service Infrastructure,PerformanceDegradation,High,Investigating,Atlantic,Fredericton,New Brunswick,PERF-201,Network performance degradation detected
+EVT-000478,SWT-OTT-004,2026-04-19 05:08:40,Network Switch,Maintenance,Informational,Resolved,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000350,SWT-EDM-016,2026-04-21 03:33:05,Network Switch,HighLatency,High,Closed,Western,Edmonton,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000148,WLS-FRE-029,2026-04-21 10:00:19,Wireless Infrastructure,ServiceInterruption,Critical,Resolved,Atlantic,Fredericton,New Brunswick,SVC-503,Network service interruption detected
+EVT-000449,WLS-QUE-037,2026-04-22 04:58:59,Wireless Infrastructure,PerformanceDegradation,Warning,Investigating,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000141,GTW-QUE-041,2026-04-22 11:19:59,Network Gateway,DeviceRecovery,Informational,Resolved,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000161,RTR-FRE-006,2026-04-22 21:30:20,Router,ConfigurationChange,Informational,Resolved,Atlantic,Fredericton,New Brunswick,CFG-101,Network device configuration was changed
+EVT-000144,SRV-HAL-005,2026-04-23 01:06:48,Service Infrastructure,PacketLoss,High,Open,Atlantic,Halifax,Nova Scotia,PKT-429,Elevated packet loss detected
+EVT-000470,SWT-OTT-033,2026-04-23 03:13:39,Network Switch,ServiceInterruption,High,Resolved,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000252,SRV-OTT-039,2026-04-23 05:17:43,Service Infrastructure,ServiceInterruption,Critical,Open,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000288,RTR-FRE-006,2026-04-23 16:31:51,Router,Maintenance,Informational,Resolved,Atlantic,Fredericton,New Brunswick,MNT-100,Scheduled network maintenance activity
+EVT-000057,SRV-HAL-005,2026-04-24 02:41:28,Service Infrastructure,HardwareFailure,High,Resolved,Atlantic,Halifax,Nova Scotia,HW-500,Hardware component failure detected
+EVT-000296,RTR-CAL-047,2026-04-24 03:45:46,Router,HardwareFailure,Critical,Open,Western,Calgary,Alberta,HW-500,Hardware component failure detected
+EVT-000020,SRV-HAL-005,2026-04-25 06:19:46,Service Infrastructure,HighLatency,Warning,Investigating,Atlantic,Halifax,Nova Scotia,LAT-408,Network latency exceeded operational threshold
+EVT-000104,SWT-QUE-009,2026-04-25 22:25:12,Network Switch,Maintenance,Informational,Resolved,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000242,SWT-QUE-018,2026-04-27 00:02:52,Network Switch,Maintenance,Informational,Resolved,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000467,SRV-HAL-005,2026-04-27 01:52:46,Service Infrastructure,PerformanceDegradation,Warning,Closed,Atlantic,Halifax,Nova Scotia,PERF-201,Network performance degradation detected
+EVT-000159,AP-CAL-035,2026-04-27 03:03:10,Access Point,DeviceRecovery,Informational,Resolved,Western,Calgary,Alberta,REC-200,Network device recovered and returned to service
+EVT-000344,AP-VAN-043,2026-04-28 00:25:13,Access Point,ServiceInterruption,Critical,Closed,Western,Vancouver,British Columbia,SVC-503,Network service interruption detected
+EVT-000255,SWT-QUE-018,2026-04-29 06:07:19,Network Switch,ConfigurationChange,Warning,Open,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000090,SWT-OTT-030,2026-04-29 23:10:00,Network Switch,Maintenance,Informational,Resolved,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000237,SRV-VAN-038,2026-04-30 10:36:20,Service Infrastructure,PerformanceDegradation,High,Investigating,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000400,GTW-MON-040,2026-04-30 17:06:01,Network Gateway,HighLatency,Warning,Closed,Eastern,Montreal,Quebec,LAT-408,Network latency exceeded operational threshold
+EVT-000375,SWT-WIN-042,2026-05-01 00:35:38,Network Switch,ServiceInterruption,High,Closed,Central,Winnipeg,Manitoba,SVC-503,Network service interruption detected
+EVT-000217,SRV-HAL-044,2026-05-01 07:17:51,Service Infrastructure,ConfigurationChange,Warning,Open,Atlantic,Halifax,Nova Scotia,CFG-101,Network device configuration was changed
+EVT-000207,WLS-TOR-015,2026-05-01 13:33:45,Wireless Infrastructure,HighLatency,Warning,Investigating,Central,Toronto,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000045,RTR-QUE-049,2026-05-01 14:48:42,Router,PerformanceDegradation,Warning,Closed,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000371,GTW-QUE-041,2026-05-02 08:48:55,Network Gateway,Maintenance,Informational,Open,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000149,GTW-MON-040,2026-05-02 11:06:40,Network Gateway,ConnectivityLoss,High,Investigating,Eastern,Montreal,Quebec,NET-503,Device connectivity interrupted
+EVT-000191,WLS-FRE-022,2026-05-02 17:05:45,Wireless Infrastructure,Maintenance,Informational,Resolved,Atlantic,Fredericton,New Brunswick,MNT-100,Scheduled network maintenance activity
+EVT-000284,WLS-FRE-029,2026-05-03 14:28:04,Wireless Infrastructure,PerformanceDegradation,High,Closed,Atlantic,Fredericton,New Brunswick,PERF-201,Network performance degradation detected
+EVT-000218,SWT-CAL-036,2026-05-04 09:11:48,Network Switch,HighLatency,Warning,Open,Western,Calgary,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000199,SRV-VAN-038,2026-05-04 20:51:03,Service Infrastructure,HardwareFailure,High,Closed,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000443,RTR-HAL-011,2026-05-05 00:36:37,Router,PacketLoss,High,Open,Atlantic,Halifax,Nova Scotia,PKT-429,Elevated packet loss detected
+EVT-000372,RTR-EDM-020,2026-05-05 11:13:04,Router,Maintenance,Informational,Closed,Western,Edmonton,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000311,AP-QUE-013,2026-05-05 12:06:39,Access Point,HardwareFailure,Critical,Open,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000376,GTW-QUE-041,2026-05-05 15:30:17,Network Gateway,ConnectivityLoss,Critical,Resolved,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000365,WLS-QUE-037,2026-05-05 17:30:53,Wireless Infrastructure,PerformanceDegradation,Warning,Resolved,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000238,SWT-QUE-003,2026-05-05 22:11:05,Network Switch,Maintenance,Informational,Resolved,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000287,SWT-OTT-004,2026-05-06 04:21:48,Network Switch,HighLatency,High,Open,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000434,RTR-OTT-008,2026-05-06 21:13:43,Router,HighLatency,Warning,Closed,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000031,SRV-HAL-005,2026-05-07 15:12:55,Service Infrastructure,DeviceRecovery,Informational,Resolved,Atlantic,Halifax,Nova Scotia,REC-200,Network device recovered and returned to service
+EVT-000460,GTW-OTT-025,2026-05-07 21:41:22,Network Gateway,PacketLoss,Warning,Investigating,Eastern,Ottawa,Ontario,PKT-429,Elevated packet loss detected
+EVT-000404,RTR-CAL-047,2026-05-08 07:16:31,Router,ConnectivityLoss,Critical,Resolved,Western,Calgary,Alberta,NET-503,Device connectivity interrupted
+EVT-000419,RTR-QUE-046,2026-05-08 09:03:04,Router,PerformanceDegradation,High,Closed,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000297,AP-VAN-043,2026-05-08 09:26:11,Access Point,HardwareFailure,Critical,Resolved,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000081,SRV-HAL-044,2026-05-08 22:28:01,Service Infrastructure,ConfigurationChange,Warning,Investigating,Atlantic,Halifax,Nova Scotia,CFG-101,Network device configuration was changed
+EVT-000025,GTW-VAN-027,2026-05-08 23:04:55,Network Gateway,ConfigurationChange,Informational,Open,Western,Vancouver,British Columbia,CFG-101,Network device configuration was changed
+EVT-000015,WLS-OTT-032,2026-05-09 02:39:42,Wireless Infrastructure,PerformanceDegradation,Warning,Investigating,Eastern,Ottawa,Ontario,PERF-201,Network performance degradation detected
+EVT-000066,RTR-EDM-020,2026-05-09 03:58:39,Router,ConfigurationChange,Informational,Open,Western,Edmonton,Alberta,CFG-101,Network device configuration was changed
+EVT-000304,SRV-HAL-005,2026-05-09 12:48:49,Service Infrastructure,ServiceInterruption,High,Open,Atlantic,Halifax,Nova Scotia,SVC-503,Network service interruption detected
+EVT-000358,RTR-QUE-046,2026-05-10 16:21:32,Router,DeviceRecovery,Informational,Closed,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000422,GTW-MON-040,2026-05-11 01:39:09,Network Gateway,ConfigurationChange,Informational,Open,Eastern,Montreal,Quebec,CFG-101,Network device configuration was changed
+EVT-000299,SWT-CAL-036,2026-05-11 02:58:07,Network Switch,PacketLoss,High,Investigating,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000300,SWT-CAL-045,2026-05-11 04:33:05,Network Switch,Maintenance,Informational,Closed,Western,Calgary,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000068,SRV-HAL-005,2026-05-12 22:47:02,Service Infrastructure,ServiceInterruption,Critical,Closed,Atlantic,Halifax,Nova Scotia,SVC-503,Network service interruption detected
+EVT-000007,SRV-OTT-039,2026-05-13 02:21:01,Service Infrastructure,DeviceRecovery,Informational,Resolved,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000424,GTW-VAN-027,2026-05-13 06:35:05,Network Gateway,HighLatency,High,Open,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000247,AP-VAN-043,2026-05-14 08:49:04,Access Point,ServiceInterruption,Critical,Investigating,Western,Vancouver,British Columbia,SVC-503,Network service interruption detected
+EVT-000052,SRV-OTT-039,2026-05-14 11:58:07,Service Infrastructure,ConfigurationChange,Warning,Investigating,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000224,WLS-OTT-032,2026-05-15 00:56:27,Wireless Infrastructure,PacketLoss,High,Open,Eastern,Ottawa,Ontario,PKT-429,Elevated packet loss detected
+EVT-000408,RTR-CAL-021,2026-05-15 01:57:52,Router,PacketLoss,Warning,Closed,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000129,RTR-CAL-047,2026-05-15 02:28:22,Router,PacketLoss,High,Investigating,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000340,GTW-OTT-025,2026-05-15 09:16:22,Network Gateway,HighLatency,Warning,Closed,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000441,SRV-VAN-038,2026-05-15 12:32:08,Service Infrastructure,ConnectivityLoss,Critical,Resolved,Western,Vancouver,British Columbia,NET-503,Device connectivity interrupted
+EVT-000194,AP-TOR-007,2026-05-15 18:16:47,Access Point,PerformanceDegradation,High,Investigating,Central,Toronto,Ontario,PERF-201,Network performance degradation detected
+EVT-000485,AP-VAN-048,2026-05-16 01:51:12,Access Point,PerformanceDegradation,High,Investigating,Western,Vancouver,British Columbia,PERF-201,Network performance degradation detected
+EVT-000204,SWT-EDM-016,2026-05-16 18:52:36,Network Switch,PacketLoss,High,Resolved,Western,Edmonton,Alberta,PKT-429,Elevated packet loss detected
+EVT-000112,RTR-QUE-031,2026-05-16 19:44:34,Router,PerformanceDegradation,Warning,Closed,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000133,AP-VAN-048,2026-05-17 11:32:29,Access Point,Maintenance,Informational,Resolved,Western,Vancouver,British Columbia,MNT-100,Scheduled network maintenance activity
+EVT-000355,SWT-CAL-036,2026-05-17 17:03:14,Network Switch,PerformanceDegradation,High,Resolved,Western,Calgary,Alberta,PERF-201,Network performance degradation detected
+EVT-000409,AP-FRE-014,2026-05-18 01:09:03,Access Point,PacketLoss,High,Open,Atlantic,Fredericton,New Brunswick,PKT-429,Elevated packet loss detected
+EVT-000401,AP-VAN-048,2026-05-18 14:58:00,Access Point,ServiceInterruption,Critical,Closed,Western,Vancouver,British Columbia,SVC-503,Network service interruption detected
+EVT-000073,WLS-QUE-037,2026-05-18 15:10:43,Wireless Infrastructure,ConfigurationChange,Warning,Open,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000272,SRV-HAL-005,2026-05-18 18:30:17,Service Infrastructure,HighLatency,High,Closed,Atlantic,Halifax,Nova Scotia,LAT-408,Network latency exceeded operational threshold
+EVT-000017,SRV-OTT-039,2026-05-19 10:34:58,Service Infrastructure,PacketLoss,Warning,Investigating,Eastern,Ottawa,Ontario,PKT-429,Elevated packet loss detected
+EVT-000451,AP-VAN-034,2026-05-20 05:04:47,Access Point,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000075,SRV-HAL-005,2026-05-20 18:17:52,Service Infrastructure,HighLatency,High,Open,Atlantic,Halifax,Nova Scotia,LAT-408,Network latency exceeded operational threshold
+EVT-000496,RTR-CAL-047,2026-05-20 20:54:15,Router,HighLatency,Warning,Investigating,Western,Calgary,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000188,WLS-FRE-029,2026-05-21 06:49:56,Wireless Infrastructure,PerformanceDegradation,High,Open,Atlantic,Fredericton,New Brunswick,PERF-201,Network performance degradation detected
+EVT-000454,WLS-QUE-037,2026-05-21 10:43:46,Wireless Infrastructure,ConnectivityLoss,Critical,Resolved,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000181,SWT-OTT-033,2026-05-21 23:38:34,Network Switch,ServiceInterruption,High,Resolved,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000341,WLS-OTT-032,2026-05-22 04:26:40,Wireless Infrastructure,HighLatency,High,Open,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000279,SWT-OTT-033,2026-05-22 05:49:56,Network Switch,ConfigurationChange,Warning,Resolved,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000391,AP-TOR-007,2026-05-22 06:25:59,Access Point,PacketLoss,Warning,Resolved,Central,Toronto,Ontario,PKT-429,Elevated packet loss detected
+EVT-000014,SWT-OTT-004,2026-05-23 02:56:11,Network Switch,ConfigurationChange,Informational,Open,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000380,SRV-OTT-039,2026-05-23 13:37:07,Service Infrastructure,HardwareFailure,Critical,Resolved,Eastern,Ottawa,Ontario,HW-500,Hardware component failure detected
+EVT-000136,AP-CAL-035,2026-05-24 10:08:49,Access Point,HardwareFailure,High,Investigating,Western,Calgary,Alberta,HW-500,Hardware component failure detected
+EVT-000491,RTR-CAL-021,2026-05-24 22:29:11,Router,PacketLoss,Warning,Investigating,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000222,SRV-WIN-024,2026-05-25 03:13:27,Service Infrastructure,Maintenance,Informational,Closed,Central,Winnipeg,Manitoba,MNT-100,Scheduled network maintenance activity
+EVT-000135,RTR-OTT-008,2026-05-25 06:04:36,Router,ConfigurationChange,Warning,Open,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000185,GTW-CAL-050,2026-05-25 14:34:39,Network Gateway,PacketLoss,Warning,Resolved,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000235,SWT-OTT-004,2026-05-25 19:03:07,Network Switch,HardwareFailure,Critical,Open,Eastern,Ottawa,Ontario,HW-500,Hardware component failure detected
+EVT-000455,RTR-VAN-002,2026-05-25 19:42:02,Router,PacketLoss,High,Open,Western,Vancouver,British Columbia,PKT-429,Elevated packet loss detected
+EVT-000002,WLS-VAN-017,2026-05-26 01:20:12,Wireless Infrastructure,HardwareFailure,High,Resolved,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000268,RTR-CAL-021,2026-05-26 01:20:17,Router,PerformanceDegradation,Warning,Closed,Western,Calgary,Alberta,PERF-201,Network performance degradation detected
+EVT-000037,WLS-OTT-019,2026-05-26 05:49:07,Wireless Infrastructure,ConfigurationChange,Informational,Open,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000124,RTR-FRE-006,2026-05-26 17:28:22,Router,ServiceInterruption,Critical,Investigating,Atlantic,Fredericton,New Brunswick,SVC-503,Network service interruption detected
+EVT-000092,RTR-HAL-011,2026-05-26 23:32:01,Router,DeviceRecovery,Informational,Closed,Atlantic,Halifax,Nova Scotia,REC-200,Network device recovered and returned to service
+EVT-000307,SRV-WIN-024,2026-05-27 02:23:49,Service Infrastructure,ConfigurationChange,Warning,Resolved,Central,Winnipeg,Manitoba,CFG-101,Network device configuration was changed
+EVT-000396,AP-OTT-026,2026-05-27 14:23:33,Access Point,HighLatency,High,Resolved,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000004,SWT-QUE-009,2026-05-27 18:12:00,Network Switch,Maintenance,Informational,Open,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000426,SWT-WIN-042,2026-05-27 18:48:03,Network Switch,DeviceRecovery,Informational,Resolved,Central,Winnipeg,Manitoba,REC-200,Network device recovered and returned to service
+EVT-000171,AP-VAN-034,2026-05-28 13:48:45,Access Point,HighLatency,High,Closed,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000281,WLS-VAN-017,2026-05-28 14:51:36,Wireless Infrastructure,ConfigurationChange,Informational,Investigating,Western,Vancouver,British Columbia,CFG-101,Network device configuration was changed
+EVT-000254,AP-TOR-007,2026-05-29 01:59:59,Access Point,HighLatency,High,Open,Central,Toronto,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000394,WLS-OTT-019,2026-05-29 10:22:52,Wireless Infrastructure,PerformanceDegradation,High,Closed,Eastern,Ottawa,Ontario,PERF-201,Network performance degradation detected
+EVT-000302,RTR-EDM-020,2026-05-29 18:32:48,Router,HardwareFailure,High,Resolved,Western,Edmonton,Alberta,HW-500,Hardware component failure detected
+EVT-000458,SWT-QUE-003,2026-05-30 07:40:10,Network Switch,ServiceInterruption,Critical,Investigating,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000168,RTR-CAL-021,2026-05-31 00:20:03,Router,ServiceInterruption,Critical,Open,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000293,SRV-WIN-024,2026-05-31 09:16:03,Service Infrastructure,ServiceInterruption,Critical,Closed,Central,Winnipeg,Manitoba,SVC-503,Network service interruption detected
+EVT-000206,WLS-QUE-037,2026-05-31 15:12:53,Wireless Infrastructure,ConnectivityLoss,Critical,Resolved,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000321,AP-FRE-014,2026-05-31 17:13:35,Access Point,HardwareFailure,Critical,Open,Atlantic,Fredericton,New Brunswick,HW-500,Hardware component failure detected
+EVT-000113,WLS-VAN-017,2026-06-01 00:46:22,Wireless Infrastructure,HighLatency,Warning,Open,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000087,SWT-EDM-016,2026-06-01 03:42:07,Network Switch,HardwareFailure,High,Open,Western,Edmonton,Alberta,HW-500,Hardware component failure detected
+EVT-000060,SRV-HAL-044,2026-06-01 11:36:18,Service Infrastructure,ConfigurationChange,Informational,Resolved,Atlantic,Halifax,Nova Scotia,CFG-101,Network device configuration was changed
+EVT-000474,WLS-OTT-032,2026-06-02 14:06:53,Wireless Infrastructure,ConnectivityLoss,Critical,Closed,Eastern,Ottawa,Ontario,NET-503,Device connectivity interrupted
+EVT-000180,SRV-HAL-005,2026-06-02 23:01:45,Service Infrastructure,ServiceInterruption,Critical,Resolved,Atlantic,Halifax,Nova Scotia,SVC-503,Network service interruption detected
+EVT-000435,WLS-VAN-017,2026-06-03 13:14:39,Wireless Infrastructure,HardwareFailure,High,Resolved,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000005,SWT-OTT-004,2026-06-03 19:21:26,Network Switch,PerformanceDegradation,Warning,Investigating,Eastern,Ottawa,Ontario,PERF-201,Network performance degradation detected
+EVT-000195,RTR-EDM-020,2026-06-04 14:17:50,Router,ConnectivityLoss,High,Resolved,Western,Edmonton,Alberta,NET-503,Device connectivity interrupted
+EVT-000403,WLS-FRE-022,2026-06-04 17:08:47,Wireless Infrastructure,PerformanceDegradation,High,Resolved,Atlantic,Fredericton,New Brunswick,PERF-201,Network performance degradation detected
+EVT-000446,SWT-CAL-045,2026-06-05 17:34:03,Network Switch,Maintenance,Informational,Closed,Western,Calgary,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000489,SWT-OTT-033,2026-06-05 21:23:47,Network Switch,DeviceRecovery,Informational,Resolved,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000362,SRV-WIN-024,2026-06-06 01:20:06,Service Infrastructure,Maintenance,Informational,Resolved,Central,Winnipeg,Manitoba,MNT-100,Scheduled network maintenance activity
+EVT-000482,GTW-OTT-025,2026-06-06 05:56:37,Network Gateway,ConnectivityLoss,High,Investigating,Eastern,Ottawa,Ontario,NET-503,Device connectivity interrupted
+EVT-000212,SWT-QUE-018,2026-06-06 14:30:31,Network Switch,HardwareFailure,Critical,Closed,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000083,RTR-QUE-049,2026-06-06 14:51:19,Router,ConfigurationChange,Warning,Investigating,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000024,SWT-QUE-009,2026-06-06 19:12:31,Network Switch,DeviceRecovery,Informational,Closed,Eastern,Quebec City,Quebec,REC-200,Network device recovered and returned to service
+EVT-000121,RTR-CAL-047,2026-06-06 22:28:52,Router,Maintenance,Informational,Closed,Western,Calgary,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000452,SRV-VAN-038,2026-06-07 00:46:41,Service Infrastructure,DeviceRecovery,Informational,Closed,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000465,SWT-QUE-018,2026-06-07 04:26:30,Network Switch,ConfigurationChange,Informational,Open,Eastern,Quebec City,Quebec,CFG-101,Network device configuration was changed
+EVT-000145,GTW-QUE-041,2026-06-07 12:11:45,Network Gateway,ConnectivityLoss,High,Investigating,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000333,GTW-CAL-050,2026-06-07 13:51:11,Network Gateway,DeviceRecovery,Informational,Resolved,Western,Calgary,Alberta,REC-200,Network device recovered and returned to service
+EVT-000385,GTW-MON-040,2026-06-07 23:04:53,Network Gateway,PacketLoss,Warning,Investigating,Eastern,Montreal,Quebec,PKT-429,Elevated packet loss detected
+EVT-000166,SWT-CAL-045,2026-06-07 23:29:33,Network Switch,DeviceRecovery,Informational,Closed,Western,Calgary,Alberta,REC-200,Network device recovered and returned to service
+EVT-000417,WLS-QUE-037,2026-06-08 21:54:55,Wireless Infrastructure,Maintenance,Informational,Resolved,Eastern,Quebec City,Quebec,MNT-100,Scheduled network maintenance activity
+EVT-000082,RTR-FRE-006,2026-06-08 22:07:47,Router,ServiceInterruption,Critical,Open,Atlantic,Fredericton,New Brunswick,SVC-503,Network service interruption detected
+EVT-000364,AP-OTT-026,2026-06-09 21:02:22,Access Point,DeviceRecovery,Informational,Closed,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000122,AP-CAL-035,2026-06-10 08:12:07,Access Point,DeviceRecovery,Informational,Closed,Western,Calgary,Alberta,REC-200,Network device recovered and returned to service
+EVT-000436,WLS-OTT-019,2026-06-10 14:03:06,Wireless Infrastructure,ConfigurationChange,Informational,Closed,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000420,WLS-VAN-017,2026-06-10 18:32:04,Wireless Infrastructure,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000123,RTR-CAL-047,2026-06-11 07:29:13,Router,ServiceInterruption,Critical,Investigating,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000274,RTR-VAN-002,2026-06-11 13:31:18,Router,HighLatency,Warning,Closed,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000137,RTR-QUE-031,2026-06-11 16:19:45,Router,ServiceInterruption,Critical,Open,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000223,RTR-CAL-047,2026-06-11 21:17:28,Router,HardwareFailure,Critical,Open,Western,Calgary,Alberta,HW-500,Hardware component failure detected
+EVT-000177,RTR-QUE-046,2026-06-12 02:05:43,Router,ServiceInterruption,Critical,Closed,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000429,SWT-HAL-012,2026-06-12 08:59:21,Network Switch,PacketLoss,Warning,Open,Atlantic,Halifax,Nova Scotia,PKT-429,Elevated packet loss detected
+EVT-000373,RTR-HAL-011,2026-06-13 14:28:27,Router,HardwareFailure,High,Resolved,Atlantic,Halifax,Nova Scotia,HW-500,Hardware component failure detected
+EVT-000275,SWT-CAL-045,2026-06-13 23:34:56,Network Switch,HighLatency,Warning,Closed,Western,Calgary,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000480,AP-FRE-014,2026-06-14 11:55:39,Access Point,HighLatency,Warning,Closed,Atlantic,Fredericton,New Brunswick,LAT-408,Network latency exceeded operational threshold
+EVT-000390,WLS-OTT-032,2026-06-14 12:06:33,Wireless Infrastructure,DeviceRecovery,Informational,Resolved,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000227,AP-OTT-026,2026-06-14 16:07:15,Access Point,ServiceInterruption,High,Open,Eastern,Ottawa,Ontario,SVC-503,Network service interruption detected
+EVT-000348,SWT-OTT-033,2026-06-14 19:05:08,Network Switch,HardwareFailure,High,Investigating,Eastern,Ottawa,Ontario,HW-500,Hardware component failure detected
+EVT-000116,SRV-VAN-038,2026-06-15 02:39:13,Service Infrastructure,ConfigurationChange,Informational,Resolved,Western,Vancouver,British Columbia,CFG-101,Network device configuration was changed
+EVT-000039,AP-VAN-034,2026-06-15 07:32:37,Access Point,HardwareFailure,High,Open,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000359,WLS-TOR-023,2026-06-15 07:38:05,Wireless Infrastructure,PerformanceDegradation,High,Resolved,Central,Toronto,Ontario,PERF-201,Network performance degradation detected
+EVT-000190,WLS-VAN-017,2026-06-15 09:30:50,Wireless Infrastructure,HighLatency,High,Open,Western,Vancouver,British Columbia,LAT-408,Network latency exceeded operational threshold
+EVT-000450,AP-CAL-035,2026-06-15 22:11:36,Access Point,HardwareFailure,High,Resolved,Western,Calgary,Alberta,HW-500,Hardware component failure detected
+EVT-000064,RTR-HAL-011,2026-06-16 17:20:04,Router,PerformanceDegradation,High,Open,Atlantic,Halifax,Nova Scotia,PERF-201,Network performance degradation detected
+EVT-000179,GTW-FRE-010,2026-06-17 18:39:26,Network Gateway,PacketLoss,Warning,Investigating,Atlantic,Fredericton,New Brunswick,PKT-429,Elevated packet loss detected
+EVT-000384,AP-TOR-007,2026-06-17 19:17:43,Access Point,ConnectivityLoss,Critical,Closed,Central,Toronto,Ontario,NET-503,Device connectivity interrupted
+EVT-000067,AP-QUE-013,2026-06-17 20:10:36,Access Point,PacketLoss,High,Resolved,Eastern,Quebec City,Quebec,PKT-429,Elevated packet loss detected
+EVT-000061,SWT-CAL-036,2026-06-17 21:21:16,Network Switch,PacketLoss,Warning,Investigating,Western,Calgary,Alberta,PKT-429,Elevated packet loss detected
+EVT-000033,GTW-VAN-027,2026-06-17 21:33:46,Network Gateway,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000169,AP-OTT-026,2026-06-18 19:32:46,Access Point,Maintenance,Informational,Closed,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000010,RTR-CAL-047,2026-06-19 00:54:38,Router,ServiceInterruption,High,Open,Western,Calgary,Alberta,SVC-503,Network service interruption detected
+EVT-000328,AP-CAL-035,2026-06-19 14:01:10,Access Point,Maintenance,Informational,Resolved,Western,Calgary,Alberta,MNT-100,Scheduled network maintenance activity
+EVT-000187,SWT-QUE-003,2026-06-19 18:01:20,Network Switch,HardwareFailure,Critical,Open,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000030,SWT-HAL-012,2026-06-19 19:23:59,Network Switch,ServiceInterruption,Critical,Investigating,Atlantic,Halifax,Nova Scotia,SVC-503,Network service interruption detected
+EVT-000471,SRV-OTT-039,2026-06-20 03:39:35,Service Infrastructure,HighLatency,Warning,Resolved,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000430,AP-OTT-026,2026-06-20 05:55:09,Access Point,DeviceRecovery,Informational,Closed,Eastern,Ottawa,Ontario,REC-200,Network device recovered and returned to service
+EVT-000069,AP-CAL-035,2026-06-20 07:17:42,Access Point,HighLatency,Warning,Open,Western,Calgary,Alberta,LAT-408,Network latency exceeded operational threshold
+EVT-000047,WLS-VAN-017,2026-06-20 17:41:46,Wireless Infrastructure,HardwareFailure,Critical,Open,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000085,RTR-QUE-031,2026-06-22 01:41:50,Router,PerformanceDegradation,High,Closed,Eastern,Quebec City,Quebec,PERF-201,Network performance degradation detected
+EVT-000432,WLS-FRE-022,2026-06-22 16:15:06,Wireless Infrastructure,ServiceInterruption,Critical,Closed,Atlantic,Fredericton,New Brunswick,SVC-503,Network service interruption detected
+EVT-000339,SRV-WIN-024,2026-06-23 17:18:46,Service Infrastructure,PacketLoss,High,Closed,Central,Winnipeg,Manitoba,PKT-429,Elevated packet loss detected
+EVT-000200,WLS-VAN-017,2026-06-24 13:13:02,Wireless Infrastructure,DeviceRecovery,Informational,Resolved,Western,Vancouver,British Columbia,REC-200,Network device recovered and returned to service
+EVT-000072,SRV-OTT-039,2026-06-24 15:59:45,Service Infrastructure,Maintenance,Informational,Resolved,Eastern,Ottawa,Ontario,MNT-100,Scheduled network maintenance activity
+EVT-000018,RTR-EDM-020,2026-06-24 16:30:19,Router,PacketLoss,High,Closed,Western,Edmonton,Alberta,PKT-429,Elevated packet loss detected
+EVT-000098,SWT-OTT-004,2026-06-25 16:51:10,Network Switch,ConfigurationChange,Warning,Closed,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000313,RTR-FRE-006,2026-06-25 19:01:57,Router,HardwareFailure,Critical,Closed,Atlantic,Fredericton,New Brunswick,HW-500,Hardware component failure detected
+EVT-000053,GTW-QUE-041,2026-06-25 19:10:25,Network Gateway,ServiceInterruption,Critical,Resolved,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000427,WLS-OTT-019,2026-06-26 07:17:34,Wireless Infrastructure,HighLatency,High,Open,Eastern,Ottawa,Ontario,LAT-408,Network latency exceeded operational threshold
+EVT-000314,SWT-OTT-033,2026-06-26 19:15:38,Network Switch,HardwareFailure,Critical,Open,Eastern,Ottawa,Ontario,HW-500,Hardware component failure detected
+EVT-000428,GTW-CAL-050,2026-06-27 07:57:32,Network Gateway,PerformanceDegradation,Warning,Open,Western,Calgary,Alberta,PERF-201,Network performance degradation detected
+EVT-000354,AP-VAN-048,2026-06-27 09:24:59,Access Point,HardwareFailure,Critical,Closed,Western,Vancouver,British Columbia,HW-500,Hardware component failure detected
+EVT-000477,WLS-TOR-015,2026-06-27 15:00:10,Wireless Infrastructure,ServiceInterruption,High,Closed,Central,Toronto,Ontario,SVC-503,Network service interruption detected
+EVT-000162,SWT-QUE-003,2026-06-27 21:12:31,Network Switch,HardwareFailure,Critical,Closed,Eastern,Quebec City,Quebec,HW-500,Hardware component failure detected
+EVT-000448,WLS-FRE-029,2026-06-28 02:40:12,Wireless Infrastructure,Maintenance,Informational,Open,Atlantic,Fredericton,New Brunswick,MNT-100,Scheduled network maintenance activity
+EVT-000103,WLS-FRE-022,2026-06-28 13:22:28,Wireless Infrastructure,PacketLoss,Warning,Closed,Atlantic,Fredericton,New Brunswick,PKT-429,Elevated packet loss detected
+EVT-000172,SWT-OTT-004,2026-06-30 03:16:06,Network Switch,ConfigurationChange,Warning,Investigating,Eastern,Ottawa,Ontario,CFG-101,Network device configuration was changed
+EVT-000431,SWT-QUE-003,2026-06-30 06:54:47,Network Switch,ConnectivityLoss,Critical,Open,Eastern,Quebec City,Quebec,NET-503,Device connectivity interrupted
+EVT-000114,RTR-HAL-011,2026-06-30 08:55:40,Router,ServiceInterruption,High,Open,Atlantic,Halifax,Nova Scotia,SVC-503,Network service interruption detected
+EVT-000044,SWT-QUE-009,2026-06-30 09:32:21,Network Switch,ServiceInterruption,Critical,Resolved,Eastern,Quebec City,Quebec,SVC-503,Network service interruption detected
+EVT-000399,SWT-OTT-030,2026-06-30 20:29:34,Network Switch,HardwareFailure,High,Resolved,Eastern,Ottawa,Ontario,HW-500,Hardware component failure detected
+EVT-000049,AP-CAL-035,2026-06-30 22:17:52,Access Point,ServiceInterruption,High,Resolved,Western,Calgary,Alberta,SVC-503,Network service interruption detected

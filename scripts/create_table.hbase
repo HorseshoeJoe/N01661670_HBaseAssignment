@@ -1,0 +1,36 @@
+# ======================================================================
+# create_table.hbase  --  Part 5: HBase Table Implementation
+# ----------------------------------------------------------------------
+# Run with:  hbase shell create_table.hbase
+# ======================================================================
+
+# ---- 1. Clean slate (safe to ignore errors on a first run) ------------
+disable 'network_events'
+drop 'network_events'
+
+# ---- 2. Create the table ---------------------------------------------
+# Four column families, chosen so that a query touching only operational
+# attributes (event, status) does not have to read the location bytes
+# off disk. HBase stores each family in its own HFile set, so family
+# design is effectively a physical I/O decision.
+#
+# VERSIONS => 5 on 'status' is deliberate: event status moves
+# Open -> Investigating -> Resolved -> Closed and Network Operations
+# needs the audit trail of that transition. All other families keep a
+# single version because an event's facts never change once emitted.
+#
+# BLOOMFILTER => 'ROW' lets HBase skip HFiles that cannot contain the
+# requested row key, which is what makes the single-row `get` fast.
+
+create 'network_events',
+  {NAME => 'event',    VERSIONS => 1, BLOOMFILTER => 'ROW'},
+  {NAME => 'device',   VERSIONS => 1, BLOOMFILTER => 'ROW'},
+  {NAME => 'location', VERSIONS => 1, BLOOMFILTER => 'ROW'},
+  {NAME => 'status',   VERSIONS => 5, BLOOMFILTER => 'ROW'}
+
+# ---- 3. Evidence of creation -----------------------------------------
+list 'network_events'
+describe 'network_events'
+is_enabled 'network_events'
+
+exit

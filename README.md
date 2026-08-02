@@ -8,7 +8,7 @@
 | **Assignment** | Telecommunications Network Event Management with Apache HBase and Zeppelin |
 | **Business context** | Bell Canada (synthetic — see disclaimer) |
 | **Work mode** | Individual |
-| **HDFS path** | `/user/<username>/bell/network_events/network_events.csv` |
+| **HDFS path** | `/user/maria_dev/bell/network_events/network_events.csv` |
 | **HBase table** | `network_events` |
 | **Row key** | `DeviceID#ReverseTimestamp#EventID` |
 | **Zeppelin notebook** | `Bell Network Event Management – HBase Analysis` |

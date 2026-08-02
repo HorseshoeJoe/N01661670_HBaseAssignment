@@ -1,0 +1,1839 @@
+{
+  "paragraphs": [
+    {
+      "text": "%md\n# Bell Network Event Management – HBase Analysis\n\n**Course:** Big Data &nbsp;|&nbsp; **Work mode:** Individual\n**Technologies:** Apache Hadoop HDFS · Apache HBase · Apache Zeppelin\n**Dataset:** `network_events.csv` — 500 synthetic telecommunications network events\n\n| | |\n|---|---|\n| Student name | *Henry Dineros* |\n| Student ID | *N01661670* |\n| HDFS path | `/user/${USER}/bell/network_events/network_events.csv` |\n| HBase table | `network_events` |\n| Row key | `DeviceID#ReverseTimestamp#EventID` |\n\n---\n\n### How to read this notebook\n\nParagraphs marked **[EXECUTED IN ZEPPELIN]** run here, through the `%sh`\ninterpreter invoking HBase Shell on the cluster.\n\nParagraphs marked **[EXECUTED EXTERNALLY — DOCUMENTED HERE]** were run in a\nterminal or HBase Shell session; the command and its verified output are\nreproduced, and a screenshot is committed under `screenshots/`.\n\nSection 16 of the assignment specification requires this distinction, and no\noperation below is claimed to have run in Zeppelin unless it did.\n\n> All data, device identifiers, error codes and scenarios are synthetic and\n> created solely for educational purposes. Bell Canada is referenced only to\n> provide a recognisable telecommunications context.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_74bbb5bb41004b7c",
+      "id": "paragraph_74bbb5bb41004b7c",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:100"
+    },
+    {
+      "text": "%md\n## Section 1 — Business Case\n\nA national telecommunications provider operates a geographically distributed\nnetwork of routers, switches, wireless infrastructure, access points, gateways\nand service infrastructure. Every component emits operational events\ncontinuously: connectivity loss, performance degradation, hardware failure,\nconfiguration change, service interruption, high latency, packet loss, device\nrecovery and scheduled maintenance.\n\nAs the fleet grows, event volume becomes unmanageable for a traditional\nrelational store. The organisation needs a **scalable historical repository**\nthat still gives **millisecond access to the event history of any individual\ndevice**.\n\n**Questions Network Operations must be able to answer:**\n\n- What events has a particular device generated?\n- What are that device's most recent events?\n- Which devices have produced Critical events?\n- Which events remain unresolved?\n- Are particular error codes recurring?\n- Which geographic areas are experiencing problems?\n\n**The core insight this prototype demonstrates:** in HBase the row key is the\nonly index, so the schema must be designed around the questions that will be\nasked — **access patterns, not relational normalisation**. Full analysis in\n`documentation/business_analysis.md`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_2a16a8c7b30844a1",
+      "id": "paragraph_2a16a8c7b30844a1",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:101"
+    },
+    {
+      "text": "%md\n## Section 2 — Solution Architecture\n\n```\n              network_events.csv\n                      │\n                      ▼\n        ┌─────────────────────────────┐\n        │          Hadoop HDFS          │   Distributed source storage\n        │   immutable system of record   │   3x replication, rebuildable\n        └───────────────┬──────────────┘\n                      ▼\n        ┌─────────────────────────────┐\n        │         Apache HBase          │   Network event data store\n        │   distributed NoSQL, key-based  │   O(1) get, ordered scans\n        └───────────────┬──────────────┘\n                      ▼\n        ┌─────────────────────────────┐\n        │       Apache Zeppelin         │   Interactive analysis\n        │  documentation · results · demo │   this notebook\n        └─────────────────────────────┘\n```\n\n| Component | Responsibility |\n|---|---|\n| **HDFS** | Stores the original CSV. Replicated, immutable, large sequential reads. The system of record — if the HBase table is dropped or re-keyed, it is rebuilt from here. |\n| **HBase** | Serving layer. Distributed NoSQL over HDFS. Key-based retrieval, device event history, row-level mutation with cell versioning. |\n| **HBase Shell** | Administrative and data interface: `create`, `describe`, `put`, `get`, `scan`, `delete`, filters. |\n| **Zeppelin** | Interactive notebook. Executes shell operations via `%%sh`, documents reasoning alongside the commands, presents results, and is the demonstration artefact. |\n\n**Why both HDFS and HBase?** They solve different problems. HDFS is optimised\nfor streaming whole files and is a poor fit for random single-record access.\nHBase provides exactly that random access — and stores its own HFiles in HDFS,\ninheriting its durability.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_80c762668b844b64",
+      "id": "paragraph_80c762668b844b64",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:102"
+    },
+    {
+      "text": "%md\n## Section 3 — Dataset\n\n**File:** `network_events.csv` &nbsp;·&nbsp; **Records:** 500 &nbsp;·&nbsp;\n**Devices:** 50 &nbsp;·&nbsp; **Period:** 2026-01-01 to 2026-06-30\n\n**HDFS source location:**\n\n```\n/user/${USER}/bell/network_events/network_events.csv\n```\n\n### Structure\n\n| Attribute | Description | Example | Distinct |\n|---|---|---|---|\n| `EventID` | Unique event identifier | `EVT-000034` | 500 |\n| `DeviceID` | Unique device identifier | `AP-OTT-026` | 50 |\n| `EventTimestamp` | When the event occurred | `2026-01-01 10:02:41` | 500 |\n| `DeviceType` | Type of network device | `Access Point` | 6 |\n| `EventType` | Category of event | `ConnectivityLoss` | 9 |\n| `Severity` | Severity level | `High` | 4 |\n| `Status` | Current status | `Closed` | 4 |\n| `Region` | Geographic region | `Eastern` | 4 |\n| `City` | Canadian city | `Ottawa` | 10 |\n| `Province` | Canadian province | `Ontario` | 8 |\n| `ErrorCode` | Synthetic error code | `NET-503` | 9 |\n| `Description` | Event description | `Device connectivity interrupted` | 9 |\n\n### Distributions\n\n| Severity | n | | Status | n | | Region | n | | Device type | n |\n|---|---|---|---|---|---|---|---|---|---|---|\n| High | 151 | | Resolved | 144 | | Eastern | 192 | | Network Switch | 111 |\n| Informational | 139 | | Closed | 142 | | Western | 170 | | Router | 107 |\n| Warning | 114 | | Open | 122 | | Atlantic | 96 | | Wireless Infra. | 86 |\n| Critical | **96** | | Investigating | 92 | | Central | 42 | | Access Point | 81 |\n| | | | | | | | | | Service Infra. | 64 |\n| | | | | | | | | | Network Gateway | 51 |\n\n**Unresolved backlog:** 214 events (122 Open + 92 Investigating).\n\n### The property that drives the design\n\nThe dataset contains **multiple events per device**, unevenly distributed:\n\n| Device | Events |\n|---|---|\n| `RTR-EDM-020` | 18 |\n| `RTR-QUE-031` | 16 |\n| `AP-VAN-043` | 16 |\n| `WLS-OTT-019` | 15 |\n| *mean* | 10 |\n\nRepeat-offender devices are only identifiable if history is retained **and is\ncheap to retrieve per device**. That requirement is what selects the row key in\nSection 5.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_5e6c2bb15a304944",
+      "id": "paragraph_5e6c2bb15a304944",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:103"
+    },
+    {
+      "text": "%sh\n# [EXECUTED IN ZEPPELIN] Part 2 -- verify the dataset in HDFS\n\necho \"=== 1. Directory listing ===\"\nhdfs dfs -ls /user/${USER}/bell/network_events\n\necho\necho \"=== 2. Size on HDFS ===\"\nhdfs dfs -du -h /user/${USER}/bell/network_events\n\necho\necho \"=== 3. Header + first 5 records ===\"\nhdfs dfs -cat /user/${USER}/bell/network_events/network_events.csv | head -6\n\necho\necho \"=== 4. Line count (501 = 500 records + header) ===\"\nhdfs dfs -cat /user/${USER}/bell/network_events/network_events.csv | wc -l\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_40a8449695514405",
+      "id": "paragraph_40a8449695514405",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:104",
+      "title": "Verify dataset in HDFS"
+    },
+    {
+      "text": "%md\n### Part 2 evidence — HDFS commands\n\n**[EXECUTED EXTERNALLY — DOCUMENTED HERE]** *(also re-runnable above)*\nScreenshots in `screenshots/hdfs/`.\n\n```bash\n# 1. Create the HDFS directory\nhdfs dfs -mkdir -p /user/${USER}/bell/network_events\n\n# 2. Upload the dataset\nhdfs dfs -put -f network_events.csv /user/${USER}/bell/network_events/\n\n# 3. Verify the file exists\nhdfs dfs -ls /user/${USER}/bell/network_events\n\n# 4. Inspect a portion of the stored data\nhdfs dfs -cat /user/${USER}/bell/network_events/network_events.csv | head -6\n\n# 5. Replication and block placement -- evidence of DISTRIBUTED storage\nhdfs fsck /user/${USER}/bell/network_events/network_events.csv -files -blocks -locations\n```\n\nFull script: `scripts/hdfs_setup.sh`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_09c8dc686adc4d71",
+      "id": "paragraph_09c8dc686adc4d71",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:105"
+    },
+    {
+      "text": "%md\n## Section 4 — HBase Data Model\n\n**Table:** `network_events` &nbsp;·&nbsp; **Row key:** `DeviceID#ReverseTimestamp#EventID`\n\n### Row-key construction\n\n```\nCSV row : EVT-000034 , AP-OTT-026 , 2026-01-01 10:02:41 , ...\nRow key : AP-OTT-026#9223370269593014807#EVT-000034\n          └───┬───┘ └───────┬──────┘ └───┬───┘\n           DeviceID   ReverseTimestamp   EventID\n          10-11 chars  19 chars, fixed   10 chars\n```\n\nKeys are 41 or 42 bytes — `AP-` device IDs are 10 characters, the other five\nprefixes 11. Safe because no DeviceID is a prefix of another and `#` (`0x23`)\nsorts below every character used in a DeviceID, so all 50 devices still occupy\n50 contiguous blocks. Fixed width is required **within** the reverse-timestamp\ncomponent, not across the whole key.\n\n```\nReverseTimestamp = (2^63 - 1) - epoch_millis(EventTimestamp)\n                 = 9223372036854775807 - 1767261761000\n                 = 9223370269593014807\n```\n\nzero-padded to 19 characters.\n\n**Two properties, both required:**\n\n1. **Inversion** — a later real timestamp yields a *smaller* reverse value.\n   HBase sorts keys ascending, so the newest event for a device sorts **first**.\n   \"Most recent five events\" becomes a scan with `LIMIT => 5`: no sort step, no\n   full history read.\n2. **Fixed width** — HBase compares row keys as **byte arrays, not numbers**.\n   Without padding, `999...` (18 chars) would sort after `1000...` (19 chars) and\n   the ordering would silently break. `zfill(19)` enforces the invariant.\n\n### Column families\n\n| Family | Versions | Bloom | Contents | Rationale |\n|---|---|---|---|---|\n| `event` | 1 | ROW | type, severity, error_code, description, timestamp | Immutable once emitted |\n| `device` | 1 | ROW | id, type | Static reference data |\n| `location` | 1 | ROW | region, city, province | Static; separated so operational reads skip these bytes |\n| `status` | **5** | ROW | state | **Only mutable attribute** — versions give a free audit trail |\n\nFamilies are stored as separate HFile sets, so family design is a **physical I/O\ndecision**. Operational triage reads `event` + `status` constantly and `location`\nonly when dispatching, so splitting them roughly halves the bytes on the common\npath.\n\n### Complete conceptual record\n\n```\nRow Key: AP-OTT-026#9223370269593014807#EVT-000034\n\n  event:type          -> ConnectivityLoss\n  event:severity      -> High\n  event:error_code    -> NET-503\n  event:description   -> Device connectivity interrupted\n  event:timestamp     -> 2026-01-01 10:02:41\n\n  device:id           -> AP-OTT-026\n  device:type         -> Access Point\n\n  location:region     -> Eastern\n  location:city       -> Ottawa\n  location:province   -> Ontario\n\n  status:state        -> Closed          (VERSIONS => 5)\n```\n\n11 cells per event × 500 events = **5,500 cells**.\n\nFull model: `documentation/hbase_data_model.md`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_7c16acd8fecd4676",
+      "id": "paragraph_7c16acd8fecd4676",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:106"
+    },
+    {
+      "text": "%md\n## Section 5 — Row-Key Analysis\n\nFour designs considered; two evaluated in full as required.\n\n| Criterion | **A** `EventID` | **B** `DeviceID#RevTS#EventID` ★ | **C** `RevTS#DeviceID#EventID` | **D** `Region#DeviceID#RevTS#EventID` |\n|---|---|---|---|---|\n| Point lookup by event ID | **O(1)** | O(1)* | O(table) | O(table) |\n| **Device event history** | O(table) | **O(matches)** | O(table) | **O(matches)** |\n| **Recent events per device** | O(table)+sort | **O(N)** | O(table) | **O(N)** |\n| Device time window | O(table) | **O(window)** | O(table) | **O(window)** |\n| Global recent events | O(table)+sort | O(table)+sort | **O(N)** | O(table)+sort |\n| Events by region | O(table) | O(table) | O(table) | **O(matches)** |\n| Events by device type | O(table) | **O(matches)** | O(table) | O(table) |\n| **Write distribution** | **Catastrophic** | **Good** | **Catastrophic** | Poor (4.5:1 skew) |\n| Key size | 10 B | 41-42 B | 41-42 B | ~50 B |\n| Key space bound | 1M events | Unbounded | Unbounded | Unbounded |\n\n<small>\\* requires constructing the composite key, or one filtered scan to find it.</small>\n\n### Selected: **Design B — `DeviceID#ReverseTimestamp#EventID`**\n\n1. **It matches the stated primary access pattern.** The specification leads with\n   *\"What events have been generated by a particular device?\"* and *\"What are the\n   most recent events associated with a device?\"* Both are O(answer) under B and\n   O(table) under every alternative. When the row key is the only index, spend it\n   on the query that runs most often.\n2. **Reverse-chronological ordering is free** — a property of the byte layout,\n   not a sort applied at read time.\n3. **Writes distribute** — 50 devices target 50 key ranges concurrently.\n4. **Key space grows with the fleet**, not with elapsed time.\n5. **The cost is accepted knowingly** — severity, status, geography and error-code\n   queries remain full scans. Those are *reporting* questions: occasional,\n   latency-tolerant, and at production volume better served by Hive.\n\n### Why a sequential event identifier is the wrong key\n\n**1. No device locality.** Event IDs are assigned in fleet-wide arrival order, so\none device's events scatter uniformly. `RTR-EDM-020`'s 18 events land at\n`EVT-000018`, `EVT-000059`, `EVT-000066`, `EVT-000076`, `EVT-000115`, `EVT-000139`\n… — 18 unrelated key positions, possibly on 18 different servers. No key range\ncontains them. The primary operator question becomes a full-table scan.\n\n**2. Monotonic keys create a permanent write hotspot.** `EVT-000501`, `EVT-000502`,\n`EVT-000503` … each sorts above every existing key, so **every write lands in the\nlast region** — one RegionServer carrying the entire national write load while\nthe cluster idles. Splitting does not help: the new upper region immediately\nbecomes the sole target. Adding nodes does not help: the key space itself\nserialises the writes.\n\n**3. No temporal semantics.** Event ID encodes arrival order at the collector, not\noccurrence time at the device. In a real network these diverge — events queue and\narrive out of order after a link is restored — so ID order is not time order even\napproximately, and the appearance of ordering is actively misleading.\n\nDesign B's residual hotspot risk is *bounded and self-limiting* (one busy device's\nshare). Design A's is *total and structural*. That difference is qualitative.\n\nFull analysis: `documentation/row_key_analysis.md`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_bcc0e7adb4e54813",
+      "id": "paragraph_bcc0e7adb4e54813",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:107"
+    },
+    {
+      "text": "%md\n## Section 6 — HBase Implementation\n\nTable creation, description, data loading and verification.\n`VERSIONS => 5` on `status` is what makes the cell-versioning demonstration in\nSection 7 possible — it must be set at creation time.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_120446e5874d4dd0",
+      "id": "paragraph_120446e5874d4dd0",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:108"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncreate 'network_events',\n  {NAME => 'event',    VERSIONS => 1, BLOOMFILTER => 'ROW'},\n  {NAME => 'device',   VERSIONS => 1, BLOOMFILTER => 'ROW'},\n  {NAME => 'location', VERSIONS => 1, BLOOMFILTER => 'ROW'},\n  {NAME => 'status',   VERSIONS => 5, BLOOMFILTER => 'ROW'}\nlist 'network_events'\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_486bf5e6cb2042b4",
+      "id": "paragraph_486bf5e6cb2042b4",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:109",
+      "title": "6.1 Create table  [EXECUTED IN ZEPPELIN]"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ndescribe 'network_events'\nis_enabled 'network_events'\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_70860c6ee72e4802",
+      "id": "paragraph_70860c6ee72e4802",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:110",
+      "title": "6.2 Describe table -- column-family configuration evidence"
+    },
+    {
+      "text": "%md\n### 6.3 Data loading — method\n\n**[EXECUTED EXTERNALLY — DOCUMENTED HERE]** Screenshots in\n`screenshots/data_loading/`.\n\n| | |\n|---|---|\n| **Source** | `/user/${USER}/bell/network_events/network_events.csv` |\n| **Target table** | `network_events` |\n| **Method** | Python generator → HBase Shell `put` script |\n| **Row-key construction** | `DeviceID + '#' + zfill((2^63-1) - epoch_millis, 19) + '#' + EventID` |\n| **Records** | 500 |\n| **Cells written** | 5,500 (11 per event) |\n\n```bash\n# 1. Generate the put statements from the CSV\ncd scripts/data_load\npython generate_puts.py \\\n    --input ../../dataset/network_events.csv \\\n    --output load_data.hbase \\\n    --table network_events\n\n#    Output:\n#      Wrote load_data.hbase\n#        records    : 500\n#        puts       : 5500\n#        sample key : AP-OTT-026#9223370269593014807#EVT-000034\n\n# 2. Execute against HBase\nhbase shell load_data.hbase\n```\n\n**Why this method.** It is fully transparent — every row key is visible in the\ngenerated script and can be inspected before a single byte is written, which\nmatters for an assignment about row-key design. The trade-off is that 5,500\nindividual `put` calls are 5,500 RPCs; production would use `ImportTsv` with\n`completebulkload`, writing HFiles directly and bypassing the write path. At 500\nrecords the difference is seconds.\n\n**How `EventTimestamp` enters the row key** (specification §12): parsed from\n`'YYYY-MM-DD HH:MM:SS'` as UTC → epoch milliseconds → subtracted from `2^63-1`\n→ zero-padded to 19 characters → placed as the middle key component. It is\n**also** retained verbatim as `event:timestamp`, because the reverse form is\nunreadable, cross-device time-range queries need a comparable column value, and\nkeeping it allows the key to be recomputed if the strategy is ever revised.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_24599910f1ca49d2",
+      "id": "paragraph_24599910f1ca49d2",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:111"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events'\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_48be8a1fad134947",
+      "id": "paragraph_48be8a1fad134947",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:112",
+      "title": "6.4 Verify load -- expect 500 rows  [EXECUTED IN ZEPPELIN]"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {LIMIT => 3}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_51af0cafb6a24442",
+      "id": "paragraph_51af0cafb6a24442",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:113",
+      "title": "6.5 Verify load -- inspect sample records"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {FILTER => \"KeyOnlyFilter() AND FirstKeyOnlyFilter()\", LIMIT => 25}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_8ce8d28ca0f3416e",
+      "id": "paragraph_8ce8d28ca0f3416e",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:114",
+      "title": "6.6 Verify row-key layout -- keys only, note the contiguous device blocks"
+    },
+    {
+      "text": "%md\n## Section 7 — CRUD Operations\n\nInsert · Retrieve · Update (with cell versioning) · Delete · Scan.\n\nThree test events, keys built with the same formula as the bulk load:\n\n| EventID | DeviceID | EventTimestamp | Row key |\n|---|---|---|---|\n| `EVT-000501` | `RTR-EDM-020` | 2026-07-01 08:15:00 | `RTR-EDM-020#9223370253961075807#EVT-000501` |\n| `EVT-000502` | `SWT-CAL-036` | 2026-07-01 09:42:30 | `SWT-CAL-036#9223370253955825807#EVT-000502` |\n| `EVT-000503` | `WLS-OTT-019` | 2026-07-02 14:05:12 | `WLS-OTT-019#9223370253853663807#EVT-000503` |\n\nFull script: `scripts/crud_operations.hbase`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_700ee46208e447e5",
+      "id": "paragraph_700ee46208e447e5",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:115"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:type', 'ConnectivityLoss'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:severity', 'Critical'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:error_code', 'NET-503'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:description', 'Device connectivity interrupted'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:timestamp', '2026-07-01 08:15:00'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'device:id', 'RTR-EDM-020'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'device:type', 'Router'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'location:region', 'Western'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'location:city', 'Edmonton'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'location:province', 'Alberta'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'status:state', 'Open'\n\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:type', 'HardwareFailure'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:severity', 'High'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:error_code', 'HW-500'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:description', 'Hardware component failure detected'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:timestamp', '2026-07-01 09:42:30'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'device:id', 'SWT-CAL-036'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'device:type', 'Network Switch'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'location:region', 'Western'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'location:city', 'Calgary'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'location:province', 'Alberta'\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'status:state', 'Open'\n\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:type', 'PacketLoss'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:severity', 'Warning'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:error_code', 'PKT-429'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:description', 'Elevated packet loss detected'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:timestamp', '2026-07-02 14:05:12'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'device:id', 'WLS-OTT-019'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'device:type', 'Wireless Infrastructure'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'location:region', 'Eastern'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'location:city', 'Ottawa'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'location:province', 'Ontario'\nput 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'status:state', 'Open'\n\ncount 'network_events'\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_2aa8f3b4a34e4254",
+      "id": "paragraph_2aa8f3b4a34e4254",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:116",
+      "title": "7.1 CREATE -- insert 3 events, count should be 503"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nget 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501'\nget 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'event'}\nget 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'status:state'}\nget 'network_events', 'RTR-EDM-020#9223370254536156807#EVT-000018'\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_28992d1ab8b840f2",
+      "id": "paragraph_28992d1ab8b840f2",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:117",
+      "title": "7.2 READ -- get: whole row, one family, one cell"
+    },
+    {
+      "text": "%md\n### 7.3 UPDATE and HBase cell versioning\n\n**HBase has no `UPDATE` statement.** A `put` to an existing row/column writes a\n**new cell** with a newer timestamp. The old cell is not overwritten in place —\nit remains in the store file until a major compaction removes versions beyond the\nfamily's `VERSIONS` setting.\n\nBecause `status` was created with `VERSIONS => 5`, all four lifecycle states stay\nreadable:\n\n```\nOpen  →  Investigating  →  Resolved  →  Closed\n```\n\nA default `get` returns only the newest version. Requesting `VERSIONS => 5`\nreturns the full history, newest first, each with its own HBase cell timestamp —\n**a free audit trail with no extra tables, no triggers and no application code.**\n\nContrast with the `event` family (`VERSIONS => 1`): overwriting `event:severity`\ndiscards the previous value at the next major compaction and only ever returns\none version. That is deliberate — an event's facts are immutable, so storing\ntheir history would be pure waste.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_543f4e62d6a242ab",
+      "id": "paragraph_543f4e62d6a242ab",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:118"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nget 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'status:state'}\n\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'status:state', 'Investigating'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'status:state', 'Resolved'\nput 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'status:state', 'Closed'\n\nget 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'status:state'}\nget 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'status:state', VERSIONS => 5}\n\nput 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:severity', 'Critical'\nget 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', {COLUMN => 'event:severity', VERSIONS => 5}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_cd32eed6374d42a3",
+      "id": "paragraph_cd32eed6374d42a3",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:119",
+      "title": "7.3 UPDATE -- status lifecycle + versioning evidence (screenshot this)"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nget 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503'\ndelete 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:description'\nget 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503'\ndeleteall 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503'\nget 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503'\ncount 'network_events'\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_3c955175f54643df",
+      "id": "paragraph_3c955175f54643df",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:120",
+      "title": "7.4 DELETE -- cell, then whole row; final get must be empty, count 502"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {LIMIT => 3}\nscan 'network_events', {STARTROW => 'RTR-EDM-020#', STOPROW => 'RTR-EDM-020$'}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_d89a0d7baf95447c",
+      "id": "paragraph_d89a0d7baf95447c",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:121",
+      "title": "7.5 SCAN -- sample, then one device's full history"
+    },
+    {
+      "text": "%md\n### 7.6 `get` vs `scan`\n\n| | `get` | Bounded `scan` | Filtered full `scan` |\n|---|---|---|---|\n| Input | One exact row key | `STARTROW` / `STOPROW` | Predicate, no bounds |\n| Regions contacted | 1 | 1 (or few) | **All** |\n| Rows read from disk | 1 | Rows in range | **Every row** |\n| Bloom filter helps | **Yes** | Partially | No |\n| Complexity | **O(1)** | O(range) | **O(table)** |\n| Grows with table size? | No | No | **Yes** |\n\n**`get`** resolves the key through the meta table to exactly one region, uses the\nrow Bloom filter to skip HFiles that provably cannot hold it, and reads one\nblock. A `get` against 500 rows and one against 500 million do the same work.\nThis is HBase's defining capability.\n\n**Bounded `scan`** restricts the scanner to a contiguous byte range — binary\nsearch to seek, then a sequential read, which disks and the block cache both\nfavour. Cost tracks the answer, not the table.\n\n**Filtered full `scan`** opens at row 1 of every region and walks to the end.\nEvery row is read off disk, deserialised, and tested; non-matching rows are\ndiscarded **server-side, after being read**.\n\n> **The key point of Part 7:** a filter reduces *network transfer*, not *disk\n> I/O*. BQ4 returns 96 of 500 rows — 404 rows are read and thrown away. The\n> client sees a small fast result; the RegionServer did the full work.\n\n**Rule:** full key known → `get`. Expressible as a key range → bounded `scan`.\nNeither → filter, and accept O(table). If a filtered query becomes a *primary*\naccess pattern, change the schema rather than keep paying for the scan.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_808b4056f92f4658",
+      "id": "paragraph_808b4056f92f4658",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:122"
+    },
+    {
+      "text": "%md\n## Section 8 — Business Data Retrieval\n\nTwelve business requirements. Expected counts assume the clean 500-record load.\n\n**[KEY]** = answered from the row key, O(matches) &nbsp;·&nbsp;\n**[FILTER]** = full-table scan, O(table)\n\n| # | Business question | Access | Expected |\n|---|---|---|---|\n| BQ1 | Pull up event EVT-000018 | **[KEY]** `get` | 1 row |\n| BQ2 | Full event history for RTR-EDM-020 | **[KEY]** range scan | 18 rows |\n| BQ3 | Five most recent for RTR-EDM-020 | **[KEY]** range + `LIMIT` | 5 rows |\n| BQ4 | Which events are Critical? | [FILTER] | 96 rows |\n| BQ5 | High or Critical? | [FILTER] | 247 rows |\n| BQ6 | Still Open? | [FILTER] | 122 rows |\n| BQ7 | Under Investigating? | [FILTER] | 92 rows |\n| BQ8 | Events in the Eastern region | [FILTER] | 192 rows |\n| BQ9 | Events in Ottawa | [FILTER] | 90 rows |\n| BQ10 | Is NET-503 recurring? | [FILTER] | 50 rows |\n| BQ11 | Are routers failing more than switches? | **[KEY]** *or* [FILTER] | 107 rows |\n| BQ12a | RTR-EDM-020 during February 2026 | **[KEY]** range scan | 4 rows |\n| BQ12b | All devices, February 2026 | [FILTER] | 77 rows |\n\nFull script with per-query explanation and cost analysis:\n`scripts/business_queries.hbase`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_84b7661e47fb46e4",
+      "id": "paragraph_84b7661e47fb46e4",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:123"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nget 'network_events', 'RTR-EDM-020#9223370254536156807#EVT-000018'\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_568856d20b0d498e",
+      "id": "paragraph_568856d20b0d498e",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:124",
+      "title": "BQ1 [KEY] Specific event -- O(1) point lookup, 1 row"
+    },
+    {
+      "text": "%md\n**BQ2 — Full device event history.** *\"Show me everything RTR-EDM-020 has ever\nreported — it has failed three times this quarter.\"*\n\n**This is the access pattern the entire row-key design exists to serve.** Because\n`DeviceID` leads the key, all 18 events occupy one contiguous byte range, almost\ncertainly in a single HFile block. The scanner seeks to the first matching row\nand stops at `STOPROW`; rows for other devices are never read.\n\n`STOPROW` is exclusive, and `$` (`0x24`) is the byte immediately after `#`\n(`0x23`), so `RTR-EDM-020$` is the tightest legal upper bound.\n\nCost: **O(18), not O(500)** — and that holds at 500 million rows too.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_954f0b8fdb214ce8",
+      "id": "paragraph_954f0b8fdb214ce8",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:125"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {STARTROW => 'RTR-EDM-020#', STOPROW => 'RTR-EDM-020$'}\ncount 'network_events', {STARTROW => 'RTR-EDM-020#', STOPROW => 'RTR-EDM-020$'}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_372f4e61760c454f",
+      "id": "paragraph_372f4e61760c454f",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:126",
+      "title": "BQ2 [KEY] Device event history -- 18 rows, newest first"
+    },
+    {
+      "text": "%md\n**BQ3 — Five most recent events.** *\"What are the last five things this router did\nbefore the outage?\"*\n\nNote the output: timestamps descend **without any `ORDER BY`**. Because\n`ReverseTimestamp = (2^63-1) - epoch_millis`, later events produce smaller values\nand sort earlier, so HBase's native ascending byte order *is*\nreverse-chronological order. `LIMIT` stops the scanner after five rows.\n\nCost: **O(5)**, regardless of how much history the device has. With a *forward*\ntimestamp this would require reading the device's entire history and sorting it\nclient-side.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_3a8946c2910c428c",
+      "id": "paragraph_3a8946c2910c428c",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:127"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {STARTROW => 'RTR-EDM-020#', STOPROW => 'RTR-EDM-020$', LIMIT => 5}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_96a07463ba3d4673",
+      "id": "paragraph_96a07463ba3d4673",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:128",
+      "title": "BQ3 [KEY] Five most recent -- reverse-chronological for free"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('event','severity',=,'binary:Critical')\"}\nscan 'network_events', {FILTER => \"SingleColumnValueFilter('event','severity',=,'binary:Critical')\", COLUMNS => ['device:id','event:type','event:timestamp'], LIMIT => 10}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_24e0bb3ffa16418f",
+      "id": "paragraph_24e0bb3ffa16418f",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:129",
+      "title": "BQ4 [FILTER] Critical severity -- 96 rows, reads all 500"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('event','severity',=,'binary:Critical') OR SingleColumnValueFilter('event','severity',=,'binary:High')\"}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_0b5c8d64f97a4dd1",
+      "id": "paragraph_0b5c8d64f97a4dd1",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:130",
+      "title": "BQ5 [FILTER] High or Critical -- 247 rows (49% of table)"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('status','state',=,'binary:Open')\"}\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('status','state',=,'binary:Investigating')\"}\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('status','state',=,'binary:Open') OR SingleColumnValueFilter('status','state',=,'binary:Investigating')\"}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_9f35398d28144831",
+      "id": "paragraph_9f35398d28144831",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:131",
+      "title": "BQ6 + BQ7 [FILTER] Open 122 / Investigating 92 / unresolved backlog 214"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('location','region',=,'binary:Eastern')\"}\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('location','city',=,'binary:Ottawa')\"}\nscan 'network_events', {FILTER => \"SingleColumnValueFilter('location','city',=,'binary:Ottawa') AND SingleColumnValueFilter('status','state',=,'binary:Open')\", COLUMNS => ['device:id','event:type','event:severity','event:timestamp'], LIMIT => 10}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_0d7c98b153924dca",
+      "id": "paragraph_0d7c98b153924dca",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:132",
+      "title": "BQ8 + BQ9 [FILTER] Eastern 192 / Ottawa 90 / unresolved in Ottawa"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('event','error_code',=,'binary:NET-503')\"}\nscan 'network_events', {FILTER => \"SingleColumnValueFilter('event','error_code',=,'binary:NET-503')\", COLUMNS => ['device:id','event:timestamp','event:severity','location:city'], LIMIT => 15}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_f5848b56ea7d418a",
+      "id": "paragraph_f5848b56ea7d418a",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:133",
+      "title": "BQ10 [FILTER] Recurring error code NET-503 -- 50 occurrences"
+    },
+    {
+      "text": "%md\n**BQ11 — Events by device type.** *\"Are routers failing more than switches?\"*\n\nThis one is instructive: device type is **both** a column value **and** encoded in\nthe `DeviceID` prefix, which is the leading component of the row key. So it can\nbe answered two ways, and they return the **same 107 rows** with completely\ndifferent plans:\n\n```ruby\n# (a) O(table)   -- reads all 500 rows, evaluates a predicate on each\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('device','type',=,'binary:Router')\"}\n\n# (b) O(matches) -- opens only the 'RTR-' key block; 393 rows never touched\ncount 'network_events', {STARTROW => 'RTR-', STOPROW => 'RTS-'}\n```\n\n**Compare the elapsed times HBase prints for each.** At 500 rows the gap is small\nand within noise — but the difference in rows *touched* (500 vs 107) is the\nentire \"row-key design beats filtering\" argument in miniature. At 500 million\nrows it is the difference between milliseconds and minutes.\n\nScreenshot both outputs together.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_c9be01f95d184ee0",
+      "id": "paragraph_c9be01f95d184ee0",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:134"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('device','type',=,'binary:Router')\"}\ncount 'network_events', {STARTROW => 'RTR-', STOPROW => 'RTS-'}\ncount 'network_events', {STARTROW => 'RTR-EDM', STOPROW => 'RTR-EDN'}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_d05b7a747d3743e2",
+      "id": "paragraph_d05b7a747d3743e2",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:135",
+      "title": "BQ11 Router events -- filter O(table) vs key range O(matches), same 107 rows"
+    },
+    {
+      "text": "%md\n**BQ12 — Time-range retrieval.**\n\n**(a) Within one device — the fast path.** Because the timestamp in the key is\n*reversed*, the range boundaries **invert**: the scan's `STARTROW` is built from\nthe *end* of the time window.\n\n```\nreverse('2026-03-01 00:00:00') = 9223370264531575807   -> STARTROW\nreverse('2026-02-01 00:00:00') = 9223370266950775807   -> STOPROW\n```\n\nCost: O(rows in window). No filter, no full scan. Expected: 4 rows.\n\n**(b) Across all devices — the slow path.** No key range can express \"all\ndevices, one month\", so this is unavoidably O(table). `event:timestamp` is stored\nas `'YYYY-MM-DD HH:MM:SS'`, a format whose lexicographic order equals its\nchronological order, so string `>=` / `<=` comparison is valid. Expected: 77 rows.\n\n**(c) A note on HBase's own cell `TIMERANGE`** — deliberately **not** used. Cell\ntimestamps record when a row was *written to HBase* (load time), not when the\nnetwork event *occurred*. Conflating the two is a classic modelling error, so\nevent time is kept as explicit data.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_61dc3eb1a4d24693",
+      "id": "paragraph_61dc3eb1a4d24693",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:136"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {STARTROW => 'RTR-EDM-020#9223370264531575807', STOPROW => 'RTR-EDM-020#9223370266950775807', COLUMNS => ['event:timestamp','event:type','event:severity']}\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('event','timestamp',>=,'binary:2026-02-01 00:00:00') AND SingleColumnValueFilter('event','timestamp',<=,'binary:2026-02-28 23:59:59')\"}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_6ab47a6eef1d4ae0",
+      "id": "paragraph_6ab47a6eef1d4ae0",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:137",
+      "title": "BQ12 Time range -- (a) [KEY] device+month 4 rows, (b) [FILTER] all devices 77 rows"
+    },
+    {
+      "text": "%md\n### Section 8 summary — which requirements the row key actually earns\n\n| Served by the row key (fast) | Require full-scan filtering |\n|---|---|\n| BQ1, BQ2, BQ3, BQ11(b), BQ12(a) | BQ4, BQ5, BQ6, BQ7, BQ8, BQ9, BQ10, BQ11(a), BQ12(b) |\n\n**5 of 12 served cheaply** — and those five are precisely the device-centric\nquestions the specification names as the primary operational access patterns\n(\"what events has this device generated\", \"what are its most recent events\").\n\nThe remaining seven are aggregate *reporting* questions. At production volume\nthey belong in Hive over the HDFS copy, not in HBase — see Section 10.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_e6a83be287bc4d35",
+      "id": "paragraph_e6a83be287bc4d35",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:138"
+    },
+    {
+      "text": "%md\n## Section 9 — HBase Filters\n\nSix techniques (the specification requires at least three), each tied to a real\nNetwork Operations question.\n\n| # | Filter | Business purpose | Expected |\n|---|---|---|---|\n| F1 | `PrefixFilter` | All events from one wireless unit | 15 rows |\n| F2 | `SingleColumnValueFilter` | Which devices reported Critical? | 96 rows |\n| F3 | `ValueFilter` | Any cell mentioning connectivity | ~100 cells |\n| F4 | `ColumnPrefixFilter` | Error-code report, that column only | 500 cells |\n| F5 | `RowFilter` + regex | Every device at the Ottawa site | 90 rows |\n| F6 | `FilterList` + `PageFilter` | Paginated Critical/Open/Eastern triage | — |\n\n**What a filter is, because it drives every cost claim:** a server-side predicate.\nThe RegionServer still reads every row in the scan range off disk and evaluates\nthe predicate *there*, then ships only survivors. Filters reduce **network\ntraffic**, not **disk I/O**. Only a bounded row-key range does that.\n\nFull script: `scripts/filters.hbase`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_df24c602ff384942",
+      "id": "paragraph_df24c602ff384942",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:139"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"PrefixFilter('WLS-OTT-019#')\"}\nscan 'network_events', {FILTER => \"PrefixFilter('WLS-OTT-019#')\", COLUMNS => ['event:type','event:severity','event:timestamp'], LIMIT => 15}\ncount 'network_events', {FILTER => \"PrefixFilter('WLS-')\"}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_afa26c15e0e14162",
+      "id": "paragraph_afa26c15e0e14162",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:140",
+      "title": "F1 PrefixFilter -- one wireless unit (15), all wireless (86)"
+    },
+    {
+      "text": "%md\n#### F1 caveat — `PrefixFilter` is **not** the same as a bounded scan\n\nThese return the identical 15 rows:\n\n```ruby\nscan 'network_events', {FILTER => \"PrefixFilter('WLS-OTT-019#')\"}               # O(table)\nscan 'network_events', {STARTROW => 'WLS-OTT-019#', STOPROW => 'WLS-OTT-019$'}  # O(matches)\n```\n\nWithout `STARTROW` the scanner begins at **row 1 of the table** and walks all 500\nrows, discarding non-matches. Same answer, ~33× the rows read. Best of both —\ngive the filter a starting point so it can also stop early:\n\n```ruby\nscan 'network_events', {STARTROW => 'WLS-OTT-019#', FILTER => \"PrefixFilter('WLS-OTT-019#')\"}\n```\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_994e9b60178149ef",
+      "id": "paragraph_994e9b60178149ef",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:141"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('event','severity',=,'binary:Critical')\"}\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('event','severity',=,'binary:Critical',true,true)\"}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_3737b4f03ba84bb5",
+      "id": "paragraph_3737b4f03ba84bb5",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:142",
+      "title": "F2 SingleColumnValueFilter -- 4-arg vs 6-arg (filterIfColumnMissing)"
+    },
+    {
+      "text": "%md\n#### F2 caveat — `SingleColumnValueFilter` emits rows that are *missing* the column\n\nBy default, a row lacking the tested column **passes** the filter. In a sparse\nNoSQL table that silently pollutes results. The six-argument form fixes it:\n\n```ruby\nSingleColumnValueFilter('event','severity',=,'binary:Critical',true,true)\n#                                                              ↑    ↑\n#                                        filterIfColumnMissing ─┘    │\n#                                            latestVersionOnly ────┘\n```\n\n`latestVersionOnly = true` also matters for `status:state`, which has\n`VERSIONS => 5` — an event that moved `Open → Resolved` must not still match a\nfilter for `Open`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_f021e3ff0e694fb3",
+      "id": "paragraph_f021e3ff0e694fb3",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:143"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {FILTER => \"ValueFilter(=,'substring:connectivity')\", LIMIT => 10}\ncount 'network_events', {FILTER => \"ValueFilter(=,'substring:ConnectivityLoss')\"}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_46cce8b6102a4425",
+      "id": "paragraph_46cce8b6102a4425",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:144",
+      "title": "F3 ValueFilter -- CELL-level, returns partial rows"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {COLUMNS => 'event', FILTER => \"ColumnPrefixFilter('err')\", LIMIT => 20}\ncount 'network_events', {FILTER => \"ColumnPrefixFilter('err')\"}\nscan 'network_events', {FILTER => \"MultipleColumnPrefixFilter('err','sev')\", LIMIT => 10}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_885d55c0840647f4",
+      "id": "paragraph_885d55c0840647f4",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:145",
+      "title": "F4 ColumnPrefixFilter -- projection; with COLUMNS it cuts real disk I/O"
+    },
+    {
+      "text": "%md\n**F5 — `RowFilter` with a regex.** *\"Every event from any device at the Ottawa\nsite, whatever its type.\"*\n\nThe site code sits in the **middle** of the row key (`AP-OTT-026`,\n`WLS-OTT-019`, `SWT-OTT-004`), and a prefix can only anchor at the **left edge**.\nSo no key range and no `PrefixFilter` can reach it — a regex over the row key is\nthe only key-based option, and it costs a full scan plus regex evaluation per row.\n\n**This is the schema's blind spot made visible.** The key is optimised for device\nlookups, so a site-level question degrades to the slowest access path in the\nfile. Both forms below return the same 90 rows, and neither is cheap.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_3ad02b504d3f47bb",
+      "id": "paragraph_3ad02b504d3f47bb",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:146"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\ncount 'network_events', {FILTER => \"RowFilter(=,'regexstring:^[A-Z]+-OTT-')\"}\ncount 'network_events', {FILTER => \"SingleColumnValueFilter('location','city',=,'binary:Ottawa')\"}\nscan 'network_events', {FILTER => \"RowFilter(=,'substring:EVT-000018')\"}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_e9f532a4c75f492e",
+      "id": "paragraph_e9f532a4c75f492e",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:147",
+      "title": "F5 RowFilter + regex -- Ottawa site 90 rows; also: find an event by ID alone"
+    },
+    {
+      "text": "%sh\nhbase shell -n <<'HBASE_EOF'\nscan 'network_events', {FILTER => \"SingleColumnValueFilter('event','severity',=,'binary:Critical') AND SingleColumnValueFilter('status','state',=,'binary:Open') AND SingleColumnValueFilter('location','region',=,'binary:Eastern')\", COLUMNS => ['device:id','event:type','event:timestamp','location:city']}\nscan 'network_events', {FILTER => \"SingleColumnValueFilter('event','severity',=,'binary:Critical') AND PageFilter(10)\", COLUMNS => ['device:id','event:timestamp']}\nexit\nHBASE_EOF",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/sh",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_b9f49f65e30948ba",
+      "id": "paragraph_b9f49f65e30948ba",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:148",
+      "title": "F6 FilterList + PageFilter -- Critical AND Open AND Eastern, paginated"
+    },
+    {
+      "text": "%md\n### Why filtering a full scan ≠ designing the right row key\n\nBoth return correct answers. They differ in **where the work happens**.\n\n| | Row-key range (`STARTROW`/`STOPROW`) | Filter on an unbounded scan |\n|---|---|---|\n| Regions contacted | The one holding the range | **All** |\n| Rows read from disk | Only those in range | **Every row in the table** |\n| Rows deserialised | Only those in range | **Every row** |\n| Work proportional to | The **answer** size | The **table** size |\n\nAt 500 rows both feel instant and the distinction looks academic. At the volume\nthis prototype models — a national carrier emitting millions of events per day —\nit is a sub-10ms lookup versus a multi-minute full-table read that saturates every\nRegionServer **and degrades the write path for live event ingestion at the same\ntime**.\n\n**The practical rule:** a filter is a fallback for questions the row key was not\ndesigned to answer. If a filtered query becomes a *primary* access pattern, that\nis a signal to change the schema — add a secondary index table, or maintain a\nsecond table with a different row key — rather than to keep paying for the scan.\nDenormalising into multiple tables, each keyed for one access pattern, is\nidiomatic HBase, not a workaround.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_b68feae2cde647e5",
+      "id": "paragraph_b68feae2cde647e5",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:149"
+    },
+    {
+      "text": "%md\n## Section 10 — Performance Analysis\n\n> **Scope note.** This prototype holds 500 rows in a single region on a sandbox\n> cluster. Every query returns in well under a second and measured differences\n> are within noise. The analysis below is therefore **architectural** — it reasons\n> about behaviour as the table grows toward the volume the design models. Where a\n> claim is demonstrable at 500 rows, the command is given.\n\n### Row-key efficiency\n\n| Access pattern | Mechanism | Complexity | Grows with table? |\n|---|---|---|---|\n| Specific event, full key | `get` | O(1) | **No** |\n| All events for a device | Range scan | O(matches) | **No** |\n| N most recent for a device | Range + `LIMIT` | O(N) | **No** |\n| Device time window | Range between reverse timestamps | O(window) | **No** |\n| All devices of one type | Scan `RTR-` → `RTS-` | O(matches) | **No** |\n| By severity / status / region / city / code | Full scan + filter | **O(table)** | **Yes** |\n| Global time window | Full scan + value filter | **O(table)** | **Yes** |\n\nFive of twelve requirements never touch a non-matching row. That ratio is the\ndesign decision, not an accident: the cheap five are the device-scoped questions\nan operations console fires continuously; the expensive seven are reporting\nquestions run occasionally.\n\n### Data distribution\n\n| Prefix | Device type | Events | Share |\n|---|---|---|---|\n| `SWT-` | Network Switch | 111 | 22.2% |\n| `RTR-` | Router | 107 | 21.4% |\n| `WLS-` | Wireless Infrastructure | 86 | 17.2% |\n| `AP-` | Access Point | 81 | 16.2% |\n| `SRV-` | Service Infrastructure | 64 | 12.8% |\n| `GTW-` | Network Gateway | 51 | 10.2% |\n\nPerfectly even would be 16.7%. Observed 10.2%–22.2% — roughly **2:1** between\nbusiest and quietest. Uneven but bounded; HBase's automatic splitting subdivides\na hot range as it grows.\n\nPer-device skew is larger: mean 10 events, `RTR-EDM-020` 18 (1.8×). In production\nthat is what a failing device looks like — and it is precisely when a device is\nfailing that its history is read most heavily, so write load and read demand\ncorrelate on the same region.\n\n### Hotspotting\n\n**Residual risks:** (1) a single flapping device concentrating writes in its\nnarrow range — bounded, and partly mitigated because the reverse timestamp\nspreads even that device's writes across its own sub-range; (2) the 2:1\nprefix-level imbalance above; (3) cold start, with all 5,500 initial puts landing\non one region.\n\n**Mitigation implemented** — pre-split on device-type prefixes\n(`scripts/create_table_presplit.hbase`):\n\n```ruby\ncreate 'network_events',\n  {NAME => 'event', ...}, {NAME => 'device', ...},\n  {NAME => 'location', ...}, {NAME => 'status', VERSIONS => 5, ...},\n  {SPLITS => ['GTW-', 'RTR-', 'SRV-', 'SWT-', 'WLS-']}\n```\n\nSix regions from the outset; writes distribute from the first put.\n\n**Alternative if it persisted — salted key:**\n\n```\nSaltByte#DeviceID#ReverseTimestamp#EventID     e.g.  03#RTR-EDM-020#9223370254536156807#EVT-000018\n```\n\nwhere `SaltByte = hash(DeviceID) mod N`. Because the salt derives from `DeviceID`\nand **not from time**, a device's events all carry the same salt — device\nlocality survives and history retrieval stays a single bounded scan.\n\n*Cost, stated plainly:* any non-device-scoped query must be issued `N` times and\nmerged client-side, and prefix scans like `RTR-` → `RTS-` (BQ11b) stop working\nentirely because the salt sits in front of the device type.\n\n**Recommendation: do not salt this prototype.** Pre-splitting addresses the\nrealistic risk at this scale, and the selected key already avoids the\ncatastrophic monotonic-write pattern. Salting is a fix for a *measured* problem,\nnot a precaution.\n\n**For contrast — the anti-pattern avoided.** A key of `EventID` alone is\nmonotonically increasing: every write sorts above every existing key and lands in\nthe last region. **100% of writes on one RegionServer, permanently.** Splitting\ndoes not help; the new upper region immediately becomes the sole target. Adding\nnodes does not help; the key space itself serialises the writes. Design B's\nhotspot risk is partial and self-limiting; this one is total and structural.\n\n### Filters — selectivity and the crossover\n\n| Query | Returns | Reads | Selectivity |\n|---|---|---|---|\n| BQ4 Critical | 96 | 500 | 19% |\n| BQ5 High or Critical | 247 | 500 | **49%** |\n| BQ8 Eastern | 192 | 500 | 38% |\n| BQ10 NET-503 | 50 | 500 | 10% |\n\nBQ5 returns nearly half the table. Below roughly 20–30% selectivity a filtered\nscan at least saves meaningful network transfer; above it the filter barely earns\nits cost and the query is effectively a full-table read with extra CPU. At\nproduction volume BQ5 is a Hive query.\n\n**The cheap win is column projection.** `COLUMNS => ['device:id','event:type']`\nrestricts the read to specific families — and because HBase stores each family in\nseparate HFiles, this genuinely reduces **disk** I/O, one of the few client-side\noptions that does.\n\n### HBase vs Hive\n\n| Belongs in **HBase** — operational, ms latency | Belongs in **Hive** — analytical, batch |\n|---|---|\n| Look up EVT-000018 (BQ1) | Mean time to resolution by device type per region |\n| Device event history (BQ2) | Quarter-over-quarter severity trends |\n| Five most recent for a device (BQ3) | Error codes preceding hardware failure within 48h |\n| Status mutation with versioning (Part 7) | Rank cities by unresolved Critical events |\n| Device time window (BQ12a) | Correlate events with maintenance windows |\n| Continuous event ingestion | Monthly executive reporting |\n| Thousands of concurrent console reads | Scheduled batch, latency-tolerant |\n\n**Honest assessment of BQ4–BQ10:** they are implemented here as HBase filter\nscans because the assignment requires HBase operations. **At production volume\nthey are Hive queries.** Each reads the entire table to return an aggregate; run\nfrequently against a live-ingesting cluster they would degrade the write path and\nthe operational read path simultaneously.\n\n```\nNetwork devices\n      │\n      ▼\n  Event stream ─────────┬─────────────────────┐\n                       ▼                      ▼\n                 HBase (serving)         HDFS (system of record)\n                 device-keyed                  │\n                 ms lookups                    ▼\n                 live console            Hive (analytics)\n                                         aggregates, joins, trends\n```\n\nSame data, two access paths, each keyed for its own workload.\n\nFull analysis: `documentation/performance_analysis.md`.\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_6e7242d02caf41a5",
+      "id": "paragraph_6e7242d02caf41a5",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:150"
+    },
+    {
+      "text": "%md\n## Section 11 — Conclusions\n\n### How HBase addresses the business problem\n\n| Business objective | Addressed by |\n|---|---|\n| 1. Scalable historical repository | Region-based horizontal scaling over HDFS |\n| 2. Source dataset in HDFS | `/user/${USER}/bell/network_events/network_events.csv`, replicated and immutable |\n| 3. Event records in HBase | `network_events`, 500 records, 5,500 cells |\n| 4. Device event histories | `DeviceID` leads the key → O(matches) range scan |\n| 5. Recent events per device | Reverse timestamp → O(N) with `LIMIT`, no sort |\n| 6. High-severity identification | `SingleColumnValueFilter` on `event:severity` |\n| 7. Unresolved event tracking | `status:state` filter; 214 unresolved |\n| 8. Recurring error codes | `event:error_code` filter; NET-503 × 50 |\n| 9. Region and city retrieval | `location` family filters |\n| 10. Zeppelin organisation and demo | This notebook |\n\n### Benefits of the selected design\n\n- **Device history is a contiguous range read**, not a distributed join or a\n  scatter of point lookups — O(answer), not O(table), and that holds at any scale.\n- **Reverse-chronological ordering is free**, a property of the byte layout rather\n  than a sort applied at read time.\n- **Writes distribute** across 50 device key ranges, avoiding the monotonic\n  hotspot that a sequential event ID would create.\n- **Cell versioning on `status`** gives a lifecycle audit trail with no extra\n  tables, no triggers and no application code.\n- **Column families split by mutability and read frequency**, so operational\n  triage reads roughly half the bytes of a single-family design.\n- **Key space grows with the device fleet**, not with elapsed time.\n- **Schema evolves without `ALTER TABLE`** — new event types add qualifiers at\n  no cost to existing rows.\n\n### Limitations of the prototype\n\n- **500 rows in one region.** Distribution, splitting and hotspot behaviour are\n  reasoned about rather than observed; the timing differences between access\n  paths are within noise at this scale.\n- **Single-node sandbox** — no real replication, no multi-RegionServer\n  parallelism, no client/server network cost.\n- **Loading via 5,500 individual `put` RPCs.** Correct and fully transparent\n  (every row key is inspectable before writing), but production would use\n  `ImportTsv` + `completebulkload`, writing HFiles directly.\n- **No secondary index**, so seven of twelve business queries are full scans.\n- **No TTL** — history grows without bound.\n- **No compression**, on data that is extremely repetitive (nine distinct\n  descriptions across 500 rows).\n- **Zeppelin executes HBase Shell via `%sh`**, not through a native HBase\n  interpreter — functional, but without typed result sets or built-in charting\n  over query output.\n\n### Potential improvements\n\n1. **Bulk load** via `ImportTsv` + `completebulkload` — orders of magnitude\n   faster than per-row puts.\n2. **Enable `COMPRESSION => 'SNAPPY'`** on all families; near-free on this data.\n3. **Secondary index table** — `network_events_by_severity`, keyed\n   `Severity#ReverseTimestamp#DeviceID#EventID`, written in parallel. Converts\n   BQ4/BQ5 from O(table) to O(matches), at the cost of a second write per event\n   and no cross-table atomicity. That trade is standard HBase practice.\n4. **TTL on column families** to age out events past the retention window.\n5. **Hive external table** over the HDFS copy for all aggregate reporting, so\n   analytics never compete with live ingestion.\n6. **Pre-split at creation**, monitor per-region request counts in the Master UI,\n   and introduce a salt only if measured imbalance persists.\n7. **Apache Phoenix** for SQL over HBase with real secondary-index support, if\n   ad-hoc querying is needed without hand-maintained index tables.\n\n---\n\n### The central lesson\n\nAn effective HBase solution requires more than creating a table and running shell\ncommands. The chain is:\n\n> **Business Requirements → Access Patterns → Row-Key Design → Column-Family\n> Design → HBase Implementation → Data Retrieval → Zeppelin Analysis →\n> Performance Evaluation**\n\nHBase gives you exactly **one** index — the row key. Everything else is a full\nscan. Which questions are fast and which are slow is decided **before any data is\nloaded**, and changing that decision means rewriting every row. In a relational\ndatabase, schema design and query performance are separable concerns addressable\nat different times. In HBase they are the same decision, made once, up front.\n\nThat is what \"modelling driven by access patterns rather than normalisation\"\nmeans in practice — and it is why `documentation/row_key_analysis.md` spends more\nspace on the four candidate keys than on the implementation itself.\n\n---\n\n<small>All data, device identifiers, error codes, architectures and operational\nscenarios in this notebook are synthetic and created exclusively for educational\npurposes. Bell Canada is referenced solely to provide a recognisable real-world\ntelecommunications business context, and nothing here represents, reproduces or\nimplies knowledge of Bell Canada's actual systems, network infrastructure, data\narchitecture or operational practices.</small>\n",
+      "user": "anonymous",
+      "dateUpdated": "2026-08-01T00:00:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "editorMode": "ace/mode/markdown",
+        "tableHide": false,
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "jobName": "paragraph_c8eb68e7678843ec",
+      "id": "paragraph_c8eb68e7678843ec",
+      "dateCreated": "2026-08-01T00:00:00+0000",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500,
+      "focus": false,
+      "$$hashKey": "object:151"
+    }
+  ],
+  "name": "Bell Network Event Management – HBase Analysis",
+  "id": "2BELLHBASE01",
+  "defaultInterpreterGroup": "sh",
+  "version": "0.10.1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {}
+}

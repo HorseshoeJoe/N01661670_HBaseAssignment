@@ -1,0 +1,260 @@
+# ======================================================================
+# business_queries.hbase  --  Part 8: Business Data Retrieval
+# ----------------------------------------------------------------------
+# Run with:  hbase shell business_queries.hbase
+#
+# Twelve business requirements. Each block states the business question,
+# the HBase operation, the expected result, why it works, and what it
+# costs. Expected counts assume the clean 500-record load (run this
+# BEFORE crud_operations.hbase, or subtract the 2 surviving test events).
+#
+# LEGEND
+#   [KEY]    answered directly from the row key -- cheap, O(matching rows)
+#   [FILTER] requires a full-table scan with server-side filtering -- O(N)
+# ======================================================================
+
+
+# ======================================================================
+# BQ1 [KEY] -- Retrieve a specific network-event record
+# ----------------------------------------------------------------------
+# Question : "Pull up the full detail of event EVT-000018 on router
+#             RTR-EDM-020 so I can attach it to the incident ticket."
+# Expected : 1 row, 11 cells across 4 column families.
+# Why      : The row key is fully known, so this is a point lookup.
+# Cost     : O(1). One region, one Bloom-filter check, one block read.
+#            Cost does not grow with table size.
+# ======================================================================
+get 'network_events', 'RTR-EDM-020#9223370254536156807#EVT-000018'
+
+
+# ======================================================================
+# BQ2 [KEY] -- Retrieve the FULL event history for one device
+# ----------------------------------------------------------------------
+# Question : "Show me everything RTR-EDM-020 has ever reported --
+#             it has failed three times this quarter."
+# Expected : 18 rows, already ordered newest-first.
+# Why      : DeviceID is the leading component of the row key, so all of
+#            a device's events are physically contiguous on disk. STOPROW
+#            is exclusive; '$' (0x24) is the next byte after '#' (0x23),
+#            so 'RTR-EDM-020$' is the tightest legal upper bound.
+# Cost     : O(rows for this device), NOT O(table). This is the single
+#            access pattern the whole row-key design exists to serve.
+# ======================================================================
+scan 'network_events', {STARTROW => 'RTR-EDM-020#', STOPROW => 'RTR-EDM-020$'}
+
+# Same question, count only.
+count 'network_events', {STARTROW => 'RTR-EDM-020#', STOPROW => 'RTR-EDM-020$'}
+
+# Equivalent using PrefixFilter -- correct answer, worse plan. See BQ-note
+# at the bottom of this file and documentation/performance_analysis.md.
+scan 'network_events', {FILTER => "PrefixFilter('RTR-EDM-020#')"}
+
+
+# ======================================================================
+# BQ3 [KEY] -- Retrieve the N MOST RECENT events for one device
+# ----------------------------------------------------------------------
+# Question : "What are the last 5 things this router did before the
+#             outage?"
+# Expected : 5 rows: 2026-06-24, 2026-06-04, 2026-05-29, 2026-05-09,
+#            2026-05-05 -- in that order, no sorting step required.
+# Why      : ReverseTimestamp = (2^63-1) - epoch_millis. Larger real
+#            timestamps produce SMALLER reverse values, so HBase's native
+#            ascending byte order over the key delivers reverse-
+#            chronological order for free. LIMIT then stops the scanner
+#            after 5 rows.
+# Cost     : O(5). The scanner touches five rows and returns. This is the
+#            payoff of the reverse timestamp -- without it, "most recent"
+#            would mean scanning the device's entire history and sorting.
+# ======================================================================
+scan 'network_events', {STARTROW => 'RTR-EDM-020#', STOPROW => 'RTR-EDM-020$', LIMIT => 5}
+
+
+# ======================================================================
+# BQ4 [FILTER] -- Identify events with CRITICAL severity
+# ----------------------------------------------------------------------
+# Question : "Which network events are Critical right now?"
+# Expected : 96 rows.
+# Why      : Severity is a column VALUE, not part of the row key, so no
+#            key range can isolate it. SingleColumnValueFilter compares
+#            event:severity server-side on every row.
+# Cost     : O(N) -- every one of the 500 rows is read off disk and
+#            evaluated on the RegionServer. The filter saves NETWORK
+#            transfer (only 96 rows come back), not DISK I/O.
+# ======================================================================
+scan 'network_events', {FILTER => "SingleColumnValueFilter('event','severity',=,'binary:Critical')"}
+count 'network_events', {FILTER => "SingleColumnValueFilter('event','severity',=,'binary:Critical')"}
+
+
+# ======================================================================
+# BQ5 [FILTER] -- Identify events with HIGH or CRITICAL severity
+# ----------------------------------------------------------------------
+# Question : "Give me the actionable queue -- anything above Warning."
+# Expected : 247 rows (151 High + 96 Critical).
+# Why      : Two SingleColumnValueFilters combined with OR. HBase's shell
+#            filter language supports AND / OR / SKIP / WHILE.
+# Cost     : O(N), same full scan as BQ4, and now nearly half the table
+#            is shipped back. At production scale this query belongs in
+#            Hive or a secondary index, not in a raw HBase scan.
+# ======================================================================
+scan 'network_events', {FILTER => "SingleColumnValueFilter('event','severity',=,'binary:Critical') OR SingleColumnValueFilter('event','severity',=,'binary:High')"}
+count 'network_events', {FILTER => "SingleColumnValueFilter('event','severity',=,'binary:Critical') OR SingleColumnValueFilter('event','severity',=,'binary:High')"}
+
+
+# ======================================================================
+# BQ6 [FILTER] -- Identify events with OPEN status
+# ----------------------------------------------------------------------
+# Question : "What is still sitting unactioned in the queue?"
+# Expected : 122 rows.
+# Note     : status:state was created with VERSIONS => 5. The filter
+#            evaluates the LATEST version by default, which is the
+#            correct business semantic -- an event that moved
+#            Open -> Resolved must not still appear as Open.
+# Cost     : O(N).
+# ======================================================================
+scan 'network_events', {FILTER => "SingleColumnValueFilter('status','state',=,'binary:Open')"}
+count 'network_events', {FILTER => "SingleColumnValueFilter('status','state',=,'binary:Open')"}
+
+
+# ======================================================================
+# BQ7 [FILTER] -- Identify events under INVESTIGATING status
+# ----------------------------------------------------------------------
+# Question : "What has been picked up by an engineer but not yet closed?"
+# Expected : 92 rows.
+# Cost     : O(N).
+# ======================================================================
+scan 'network_events', {FILTER => "SingleColumnValueFilter('status','state',=,'binary:Investigating')"}
+count 'network_events', {FILTER => "SingleColumnValueFilter('status','state',=,'binary:Investigating')"}
+
+# Combined "unresolved backlog" view -- Open OR Investigating.
+# Expected: 214 rows. This is Business Objective 7 in the specification.
+count 'network_events', {FILTER => "SingleColumnValueFilter('status','state',=,'binary:Open') OR SingleColumnValueFilter('status','state',=,'binary:Investigating')"}
+
+# Highest-priority triage list: Critical AND still Open. Expected: 26 rows.
+scan 'network_events', {FILTER => "SingleColumnValueFilter('event','severity',=,'binary:Critical') AND SingleColumnValueFilter('status','state',=,'binary:Open')", COLUMNS => ['device:id','event:type','event:timestamp','location:city']}
+
+
+# ======================================================================
+# BQ8 [FILTER] -- Retrieve events for a selected REGION
+# ----------------------------------------------------------------------
+# Question : "Is the Eastern region degrading faster than the others?"
+# Expected : 192 rows.
+# Why      : Region is in the location family, not the key. If regional
+#            reporting became the dominant access pattern, the row key
+#            would have to change to Region#DeviceID#ReverseTimestamp#
+#            EventID -- which is exactly the trade-off Part 4 asks about.
+#            You cannot optimise for device history AND region rollups
+#            with one row key; that is HBase's central limitation.
+# Cost     : O(N).
+# ======================================================================
+scan 'network_events', {FILTER => "SingleColumnValueFilter('location','region',=,'binary:Eastern')"}
+count 'network_events', {FILTER => "SingleColumnValueFilter('location','region',=,'binary:Eastern')"}
+
+
+# ======================================================================
+# BQ9 [FILTER] -- Retrieve events for a selected CITY
+# ----------------------------------------------------------------------
+# Question : "Field ops are dispatching to Ottawa -- what is open there?"
+# Expected : 90 rows.
+# Cost     : O(N).
+# ======================================================================
+scan 'network_events', {FILTER => "SingleColumnValueFilter('location','city',=,'binary:Ottawa')"}
+count 'network_events', {FILTER => "SingleColumnValueFilter('location','city',=,'binary:Ottawa')"}
+
+# Refined: unresolved events in Ottawa only, projecting the few columns a
+# dispatcher actually needs. COLUMNS reduces bytes returned but not rows
+# scanned.
+scan 'network_events', {FILTER => "SingleColumnValueFilter('location','city',=,'binary:Ottawa') AND SingleColumnValueFilter('status','state',=,'binary:Open')", COLUMNS => ['device:id','event:type','event:severity','event:timestamp']}
+
+
+# ======================================================================
+# BQ10 [FILTER] -- Retrieve events containing a selected ERROR CODE
+# ----------------------------------------------------------------------
+# Question : "NET-503 keeps recurring. How often, and on which devices?"
+# Expected : 50 rows.
+# Why      : Business Objective 8 -- recurring error-code investigation.
+#            Project device:id so the recurrence pattern across devices
+#            is visible in the output rather than buried in full records.
+# Cost     : O(N).
+# ======================================================================
+scan 'network_events', {FILTER => "SingleColumnValueFilter('event','error_code',=,'binary:NET-503')", COLUMNS => ['device:id','event:timestamp','event:severity','location:city']}
+count 'network_events', {FILTER => "SingleColumnValueFilter('event','error_code',=,'binary:NET-503')"}
+
+
+# ======================================================================
+# BQ11 [FILTER or KEY] -- Retrieve events for a selected DEVICE TYPE
+# ----------------------------------------------------------------------
+# Question : "Are routers failing more than switches?"
+# Expected : 107 rows for Router.
+#
+# This one is interesting: device type is BOTH a column value AND encoded
+# in the DeviceID prefix ('RTR-'), which is the leading component of the
+# row key. So it can be answered two ways.
+# ======================================================================
+
+# (a) Value filter -- correct, but a full scan. Cost O(N).
+count 'network_events', {FILTER => "SingleColumnValueFilter('device','type',=,'binary:Router')"}
+
+# (b) Key range -- same 107 rows, but the scanner only ever opens the
+#     'RTR-' key block. Cost O(matching rows). Faster because the naming
+#     convention happens to align with the key prefix. Screenshot BOTH
+#     and compare the elapsed times HBase prints -- this is the clearest
+#     single demonstration of "row-key design beats filtering".
+count 'network_events', {STARTROW => 'RTR-', STOPROW => 'RTS-'}
+scan  'network_events', {STARTROW => 'RTR-', STOPROW => 'RTS-', LIMIT => 10, COLUMNS => ['device:id','event:type','event:severity']}
+
+# Narrower still: all routers in Edmonton. Expected 18 rows.
+count 'network_events', {STARTROW => 'RTR-EDM', STOPROW => 'RTR-EDN'}
+
+
+# ======================================================================
+# BQ12 -- Retrieve events within a specified TIME RANGE
+# ----------------------------------------------------------------------
+# Question : "What did RTR-EDM-020 report during February 2026?"
+#
+# (a) [KEY] Time range WITHIN ONE DEVICE -- the fast path.
+#     Expected: 4 rows.
+#
+#     Because the key is DeviceID#ReverseTimestamp#EventID and the
+#     timestamp is REVERSED, the range boundaries invert: the START of
+#     the scan is built from the END of the time window.
+#
+#         reverse('2026-03-01 00:00:00') = 9223370264531575807  -> STARTROW
+#         reverse('2026-02-01 00:00:00') = 9223370266950775807  -> STOPROW
+#
+#     Compute these with:
+#         python scripts/data_load/generate_puts.py   (import reverse_timestamp)
+#     Cost: O(rows in window). No filter, no full scan.
+# ======================================================================
+scan 'network_events', {STARTROW => 'RTR-EDM-020#9223370264531575807', STOPROW => 'RTR-EDM-020#9223370266950775807', COLUMNS => ['event:timestamp','event:type','event:severity']}
+
+# (b) [FILTER] Time range ACROSS ALL DEVICES -- the slow path.
+#     Expected: 77 rows in February 2026.
+#     event:timestamp is stored as 'YYYY-MM-DD HH:MM:SS', a format whose
+#     lexicographic order equals its chronological order, so >= and <=
+#     string comparison is valid. There is no key range that can express
+#     "all devices, one month", so this is unavoidably O(N).
+scan 'network_events', {FILTER => "SingleColumnValueFilter('event','timestamp',>=,'binary:2026-02-01 00:00:00') AND SingleColumnValueFilter('event','timestamp',<=,'binary:2026-02-28 23:59:59')", COLUMNS => ['device:id','event:timestamp','event:severity']}
+count 'network_events', {FILTER => "SingleColumnValueFilter('event','timestamp',>=,'binary:2026-02-01 00:00:00') AND SingleColumnValueFilter('event','timestamp',<=,'binary:2026-02-28 23:59:59')"}
+
+# (c) HBase's own cell TIMERANGE is deliberately NOT used here. Cell
+#     timestamps record when the row was WRITTEN to HBase (load time),
+#     not when the network event OCCURRED. Conflating the two is a
+#     classic modelling error, so event time is kept as explicit data.
+
+
+# ======================================================================
+# SUMMARY -- which requirements the row key actually earns
+# ----------------------------------------------------------------------
+#   Served by the row key (fast):   BQ1, BQ2, BQ3, BQ11(b), BQ12(a)
+#   Require full-scan filtering:    BQ4, BQ5, BQ6, BQ7, BQ8, BQ9, BQ10,
+#                                   BQ11(a), BQ12(b)
+#
+# That is 5 of 12 served cheaply -- and those 5 are precisely the
+# device-centric questions the specification names as the primary
+# operational access patterns ("what events has this device generated",
+# "what are its most recent events"). The remaining 7 are aggregate
+# reporting questions, which is analytical work: at production volume
+# they belong in Hive over the HDFS copy of the data, not in HBase.
+# ======================================================================
+
+exit

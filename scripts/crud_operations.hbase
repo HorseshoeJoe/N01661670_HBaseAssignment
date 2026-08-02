@@ -1,0 +1,181 @@
+# ======================================================================
+# crud_operations.hbase  --  Part 7: HBase CRUD Operations
+# ----------------------------------------------------------------------
+# Run with:  hbase shell crud_operations.hbase
+#
+# Row keys used below were produced by scripts/data_load/generate_puts.py
+# using the same formula as the bulk load:
+#     DeviceID # ((2^63-1) - epoch_millis) # EventID
+#
+#   EVT-000501  RTR-EDM-020  2026-07-01 08:15:00
+#   EVT-000502  SWT-CAL-036  2026-07-01 09:42:30
+#   EVT-000503  WLS-OTT-019  2026-07-02 14:05:12
+# ======================================================================
+
+
+# ======================================================================
+# C -- CREATE / INSERT  (3 new network-event records)
+# ======================================================================
+
+# ---- Test event 1: RTR-EDM-020, Critical connectivity loss ------------
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:type', 'ConnectivityLoss'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:severity', 'Critical'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:error_code', 'NET-503'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:description', 'Device connectivity interrupted'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'event:timestamp', '2026-07-01 08:15:00'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'device:id', 'RTR-EDM-020'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'device:type', 'Router'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'location:region', 'Western'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'location:city', 'Edmonton'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'location:province', 'Alberta'
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'status:state', 'Open'
+
+# ---- Test event 2: SWT-CAL-036, High hardware failure -----------------
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:type', 'HardwareFailure'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:severity', 'High'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:error_code', 'HW-500'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:description', 'Hardware component failure detected'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:timestamp', '2026-07-01 09:42:30'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'device:id', 'SWT-CAL-036'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'device:type', 'Network Switch'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'location:region', 'Western'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'location:city', 'Calgary'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'location:province', 'Alberta'
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'status:state', 'Open'
+
+# ---- Test event 3: WLS-OTT-019, Warning packet loss (DELETE target) ---
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:type', 'PacketLoss'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:severity', 'Warning'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:error_code', 'PKT-429'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:description', 'Elevated packet loss detected'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:timestamp', '2026-07-02 14:05:12'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'device:id', 'WLS-OTT-019'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'device:type', 'Wireless Infrastructure'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'location:region', 'Eastern'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'location:city', 'Ottawa'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'location:province', 'Ontario'
+put 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'status:state', 'Open'
+
+# Record count should now be 503.
+count 'network_events'
+
+
+# ======================================================================
+# R -- READ / RETRIEVE  (get)
+# ======================================================================
+
+# Whole record, all four column families.
+get 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501'
+
+# One family only -- HBase reads just that family's HFiles.
+get 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'event'}
+
+# One cell only.
+get 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'status:state'}
+
+# A record that came from the bulk load, to prove both paths agree.
+get 'network_events', 'RTR-EDM-020#9223370254536156807#EVT-000018'
+
+
+# ======================================================================
+# U -- UPDATE  (status lifecycle + cell versioning)
+# ======================================================================
+#
+# HBase has no UPDATE statement. A `put` to an existing row/column writes
+# a NEW CELL carrying a newer timestamp. The old cell is not overwritten
+# in place -- it stays in the store file until a major compaction removes
+# versions beyond VERSIONS. Because the 'status' family was created with
+# VERSIONS => 5, all four lifecycle states remain readable, which gives
+# Network Operations a free audit trail of how an incident progressed.
+
+# State before the transition.
+get 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'status:state'}
+
+# Open -> Investigating
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'status:state', 'Investigating'
+
+# Investigating -> Resolved
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'status:state', 'Resolved'
+
+# Resolved -> Closed
+put 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', 'status:state', 'Closed'
+
+# Default read returns only the newest version: 'Closed'.
+get 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'status:state'}
+
+# Asking for VERSIONS => 5 returns the full history, newest first, each
+# with its own HBase cell timestamp. THIS IS THE VERSIONING EVIDENCE --
+# screenshot this output.
+get 'network_events', 'RTR-EDM-020#9223370253961075807#EVT-000501', {COLUMN => 'status:state', VERSIONS => 5}
+
+# The same idea at scan level.
+scan 'network_events', {STARTROW => 'RTR-EDM-020#9223370253961075807#EVT-000501', LIMIT => 1, VERSIONS => 5, COLUMNS => 'status:state'}
+
+# Contrast: 'event' family was created with VERSIONS => 1, so overwriting
+# a severity discards the previous value at the next major compaction and
+# only ever returns one version.
+put 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', 'event:severity', 'Critical'
+get 'network_events', 'SWT-CAL-036#9223370253955825807#EVT-000502', {COLUMN => 'event:severity', VERSIONS => 5}
+
+
+# ======================================================================
+# D -- DELETE
+# ======================================================================
+
+# Before.
+get 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503'
+
+# Delete a single cell (one column of one row).
+delete 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503', 'event:description'
+get 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503'
+
+# Delete the entire row (all families, all versions).
+deleteall 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503'
+
+# Verification -- this get must come back empty (0 row(s)).
+get 'network_events', 'WLS-OTT-019#9223370253853663807#EVT-000503'
+
+# Count is back to 502 (500 loaded + 2 surviving test events).
+count 'network_events'
+
+
+# ======================================================================
+# SCAN  (inspection)
+# ======================================================================
+
+# Small sample of the whole table.
+scan 'network_events', {LIMIT => 3}
+
+# Row keys only -- cheap way to eyeball the key layout and confirm that
+# rows for one device sit contiguously, newest first.
+scan 'network_events', {FILTER => "KeyOnlyFilter() AND FirstKeyOnlyFilter()", LIMIT => 20}
+
+# Bounded scan: everything for one device. STOPROW is exclusive, and '$'
+# (0x24) sorts immediately after '#' (0x23), so the range covers exactly
+# the RTR-EDM-020 key block and stops before the next device.
+scan 'network_events', {STARTROW => 'RTR-EDM-020#', STOPROW => 'RTR-EDM-020$'}
+
+
+# ======================================================================
+# get vs scan -- the point of Part 7
+# ======================================================================
+#
+#   get   Single-row point lookup. HBase resolves the row key to exactly
+#         one region, uses the Bloom filter to skip HFiles that cannot
+#         hold that key, and reads one block. Cost is O(1) in table size
+#         -- a get against 500 rows and a get against 500 million rows
+#         take the same time. This is HBase's core competency.
+#
+#   scan  Sequential iteration over a key RANGE. Cost is proportional to
+#         the number of rows the scanner actually walks. A BOUNDED scan
+#         (STARTROW/STOPROW, as above) is nearly as cheap as a get because
+#         the range is tiny. An UNBOUNDED scan with a FILTER still reads
+#         every row in the table server-side and only discards
+#         non-matching rows before shipping them back -- it saves network
+#         bandwidth, not disk I/O.
+#
+# Rule of thumb: if the question can be answered by a row-key range, use
+# a bounded scan. If it cannot, a filter is the fallback and it costs a
+# full-table read.
+
+exit
